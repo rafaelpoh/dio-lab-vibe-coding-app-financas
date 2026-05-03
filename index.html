@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente Financeiro - MVP</title>
+    <!-- Ordem estrita do CSS conforme spec.md -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/var.css">
+    <link rel="stylesheet" href="css/skin.css">
+</head>
+<body>
+
+    <!-- Tela de Login -->
+    <main id="login-view" class="view-container active">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Agente Financeiro</h1>
+                <p>O seu controle financeiro simples e inteligente.</p>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="input-group">
+                    <label for="username">Usuário</label>
+                    <input type="text" id="username" placeholder="Digite seu usuário" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" placeholder="Digite sua senha" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+            <button id="theme-toggle-login" class="btn-icon theme-toggle" aria-label="Mudar Tema">
+                <!-- Ícone de Lua por padrão -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+        </div>
+    </main>
+
+    <!-- App Principal -->
+    <main id="app-view" class="view-container hidden">
+        
+        <!-- Sidebar / Menu -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Agente<br>Financeiro</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-target="chat">Chat</button>
+                <button class="nav-item" data-target="dashboard">Dashboard</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle-app" class="btn-icon theme-toggle" aria-label="Mudar Tema">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+                <button id="logout-btn" class="btn-secondary">Sair</button>
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-content">
+            
+            <!-- Visão de Chat -->
+            <section id="chat-section" class="content-section active">
+                <header class="section-header">
+                    <h3>Conversa Financeira</h3>
+                    <div class="balance-badge">Saldo: R$ <span id="current-balance">0,00</span></div>
+                </header>
+                
+                <div id="chat-history" class="chat-history">
+                    <!-- Mensagens mockadas aparecerão aqui via JS -->
+                    <div class="message bot">
+                        <div class="message-bubble">
+                            Olá! Sou seu Agente Financeiro. Me conte o que você gastou hoje ou se recebeu algum dinheiro. Ex: "Gastei R$ 30 com almoço".
+                        </div>
+                    </div>
+                </div>
+
+                <form id="chat-form" class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Digite sua mensagem..." autocomplete="off">
+                    <button type="submit" class="btn-primary btn-send" aria-label="Enviar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Visão de Dashboard -->
+            <section id="dashboard-section" class="content-section hidden">
+                <header class="section-header">
+                    <h3>Dashboard</h3>
+                </header>
+                <div class="dashboard-cards">
+                    <div class="card summary-card">
+                        <h4>Receitas</h4>
+                        <p class="value success">R$ <span id="total-income">0,00</span></p>
+                    </div>
+                    <div class="card summary-card">
+                        <h4>Despesas</h4>
+                        <p class="value danger">R$ <span id="total-expense">0,00</span></p>
+                    </div>
+                </div>
+                
+                <div class="card report-card">
+                    <h4>Despesas por Categoria (Neste Mês)</h4>
+                    <ul id="category-list" class="category-list">
+                        <!-- Categorias fixas serão injetadas via JS -->
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Scripts (Carregados no fim do body / com defer) -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

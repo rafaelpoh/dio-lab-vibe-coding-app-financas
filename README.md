@@ -87,3 +87,32 @@ No README do seu repositório, inclua:
 ## 💬 Conclusão
 
 Vibe Coding é sobre clareza, curiosidade e criatividade, não sobre perfeição técnica. O verdadeiro objetivo aqui é aprender a pensar junto com a IA, transformando ideias em conceitos reais e enxergando a tecnologia como uma extensão do seu raciocínio criativo. Cada interação é um experimento, quanto mais clara for sua intenção, mais surpreendente será o resultado.
+
+---
+
+## 🚀 Como Rodar o App (Vercel + Gemini + MongoDB)
+
+Este projeto foi evoluído para utilizar a Vercel com Serverless Functions.
+
+1. Instale as dependências localmente:
+   ```bash
+   npm install
+   ```
+
+2. Configure suas variáveis de ambiente:
+   Copie o arquivo `.env.example` para `.env` e insira suas chaves do Gemini e do MongoDB:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Instale o Vercel CLI (se ainda não tiver):
+   ```bash
+   npm i -g vercel
+   ```
+
+4. Rode o ambiente de desenvolvimento local:
+   ```bash
+   vercel dev
+   ```
+   
+O projeto estará rodando localmente (geralmente em `http://localhost:3000`), processando o backend Serverless na pasta `/api` e o frontend em JS Vanilla.

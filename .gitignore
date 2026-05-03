@@ -1,0 +1,37 @@
+# Variáveis de Ambiente e Segredos (CRÍTICO)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dependências do Node.js
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Pasta de configurações locais da Vercel
+.vercel/
+
+# Arquivos do Sistema Operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Pastas de Editores/IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+.vercel
+.env*.local
