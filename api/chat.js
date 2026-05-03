@@ -34,22 +34,24 @@ module.exports = async (req, res) => {
 
         const prompt = `
         Você é um Assistente Financeiro Pessoal integrado a um aplicativo. 
-        Sua tarefa é analisar a mensagem do usuário, que geralmente contém um gasto ou uma receita, e extrair os dados estruturados E gerar uma resposta amigável.
+        Sua tarefa é analisar a mensagem do usuário e extrair os dados estruturados E gerar uma resposta amigável.
         
         Regras para a Resposta Amigável (botMessage):
         1. Seja cordial, educado e encorajador quanto à organização financeira.
-        2. É ESTRITAMENTE PROIBIDO fazer comentários sobre o corpo, peso, dieta, ou estilo de vida pessoal do usuário (ex: se ele comeu fast food, não fale de calorias ou saúde). Foque APENAS no aspecto financeiro.
+        2. É ESTRITAMENTE PROIBIDO fazer comentários sobre o corpo, peso, dieta, ou estilo de vida pessoal do usuário.
         3. A resposta deve ser curta, como uma mensagem de chat.
+        4. SE o usuário pedir para zerar, resetar, limpar ou apagar a carteira/saldo/gastos, você deve entender isso como uma ação de reset. Defina o "type" como "reset" e o "amount" como 0.
+        5. SE o usuário perguntar sobre investimentos ou decidir investir um valor: classifique como type "investment". Forneça uma dica educacional, mas INCLUA UM ALERTA CLARO sobre os riscos do mercado financeiro e recomende estudar antes de aplicar.
         
         A mensagem do usuário foi: "${message}"
         
-        Retorne APENAS um JSON válido no seguinte formato exato (sem formatação markdown como \`\`\`json, apenas o texto puro do JSON):
+        Retorne APENAS um JSON válido no seguinte formato exato (sem formatação markdown):
         {
-          "amount": <numero float, ex: 35.50>,
-          "category": "<Uma categoria fixa: Alimentação, Transporte, Lazer, Saúde, Moradia, Outros, ou Renda para recebimentos>",
-          "description": "<breve descricao, ex: Hamburguer>",
-          "type": "<expense ou income>",
-          "botMessage": "<Sua mensagem amigável seguindo as regras>"
+          "amount": <numero float, ex: 35.50 ou 0 para reset>,
+          "category": "<Uma categoria fixa: Alimentação, Transporte, Lazer, Saúde, Moradia, Outros, Renda, Investimento ou Reset>",
+          "description": "<breve descricao>",
+          "type": "<expense, income, investment ou reset>",
+          "botMessage": "<Sua mensagem amigável com alerta de risco se for investimento>"
         }
         `;
 
@@ -60,10 +62,19 @@ module.exports = async (req, res) => {
         const cleanJsonText = responseText.replace(/```json/gi, '').replace(/```/gi, '').trim();
         const extractedData = JSON.parse(cleanJsonText);
 
-        // Salvar no MongoDB
         const db = await connectToDatabase();
         const transactionsCollection = db.collection('transactions');
         
+        // Se a IA identificou que o usuário quer resetar a conta
+        if (extractedData.type === 'reset') {
+            await transactionsCollection.deleteMany({ userId });
+            return res.status(200).json({
+                text: extractedData.botMessage || "Carteira zerada com sucesso!",
+                transaction: extractedData
+            });
+        }
+
+        // Caso contrário, é um gasto ou receita normal
         await transactionsCollection.insertOne({
             userId,
             amount: extractedData.amount,

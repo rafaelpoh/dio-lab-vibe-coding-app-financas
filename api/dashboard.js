@@ -36,11 +36,14 @@ module.exports = async (req, res) => {
         // Agrupar dados
         let income = 0;
         let expense = 0;
+        let investment = 0;
         const categoryTotals = {};
 
         transactions.forEach(t => {
             if (t.type === 'income') {
                 income += t.amount;
+            } else if (t.type === 'investment') {
+                investment += t.amount;
             } else {
                 expense += t.amount;
                 if (!categoryTotals[t.category]) categoryTotals[t.category] = 0;
@@ -72,7 +75,8 @@ module.exports = async (req, res) => {
             balance: {
                 income,
                 expense,
-                current: income - expense
+                investment,
+                current: income - expense - investment
             },
             categories: categoriesArray
         };

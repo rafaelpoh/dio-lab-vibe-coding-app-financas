@@ -89,11 +89,36 @@ async function loadDashboard(userId) {
         // Update Balances
         const incomeEl = document.getElementById('total-income');
         const expenseEl = document.getElementById('total-expense');
+        const investmentEl = document.getElementById('total-investment');
         const currentBalEl = document.getElementById('current-balance');
         
         if(incomeEl) incomeEl.textContent = formatCurrency(data.balance.income).replace('R$', '').trim();
         if(expenseEl) expenseEl.textContent = formatCurrency(data.balance.expense).replace('R$', '').trim();
+        if(investmentEl) investmentEl.textContent = formatCurrency(data.balance.investment || 0).replace('R$', '').trim();
         if(currentBalEl) currentBalEl.textContent = formatCurrency(data.balance.current).replace('R$', '').trim();
+
+        // Render Pie Chart (Vanilla CSS)
+        const chartEl = document.getElementById('dashboard-chart');
+        if (chartEl) {
+            const total = (data.balance.income || 0) + (data.balance.expense || 0) + (data.balance.investment || 0);
+            if (total === 0) {
+                chartEl.style.background = 'var(--bg-tertiary)';
+            } else {
+                const incomePct = ((data.balance.income || 0) / total) * 100;
+                const expensePct = ((data.balance.expense || 0) / total) * 100;
+                // const investPct = ((data.balance.investment || 0) / total) * 100;
+                
+                // Conic Gradient string: success (0% to income%), danger (income% to income+expense%), investment (rest)
+                const point1 = incomePct.toFixed(1);
+                const point2 = (incomePct + expensePct).toFixed(1);
+                
+                chartEl.style.background = `conic-gradient(
+                    var(--success-color) 0% ${point1}%, 
+                    var(--danger-color) ${point1}% ${point2}%, 
+                    var(--investment-color) ${point2}% 100%
+                )`;
+            }
+        }
 
         // Update Categories (Safe DOM creation)
         const categoryList = document.getElementById('category-list');
