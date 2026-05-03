@@ -61,6 +61,6 @@ module.exports = async (req, res) => {
         }
     } catch (error) {
         console.error('Login Error:', error);
-        return res.status(500).json({ error: 'Erro interno no servidor.' });
+        return res.status(500).json({ error: `Erro no servidor: ${error.message}` });
     }
 };

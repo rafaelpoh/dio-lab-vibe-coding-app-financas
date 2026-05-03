@@ -80,6 +80,6 @@ module.exports = async (req, res) => {
 
     } catch (error) {
         console.error('Chat API Error:', error);
-        return res.status(500).json({ error: 'Erro ao processar mensagem ou salvar no banco.' });
+        return res.status(500).json({ error: `Erro no processamento: ${error.message}` });
     }
 };

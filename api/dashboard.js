@@ -81,6 +81,6 @@ module.exports = async (req, res) => {
 
     } catch (error) {
         console.error('Dashboard Error:', error);
-        return res.status(500).json({ error: 'Erro ao buscar dados do dashboard.' });
+        return res.status(500).json({ error: `Erro ao buscar dados: ${error.message}` });
     }
 };
