@@ -57,8 +57,9 @@ h1, h2, h3, h4 {
 .tooltip-icon::after {
     content: attr(data-tooltip);
     position: absolute;
-    top: 130%; /* Modificado para aparecer abaixo do ícone */
-    right: 0; /* Ancorar pela direita para evitar vazar na tela */
+    top: 130%; /* Aparece abaixo do ícone */
+    left: 50%;
+    transform: translateX(-50%); /* Centralizado em relação ao ícone */
     background: var(--bg-tertiary);
     color: var(--text-primary);
     padding: 0.5rem 0.75rem;
@@ -260,7 +261,9 @@ h1, h2, h3, h4 {
     display: flex;
     flex-direction: column;
     background-color: var(--bg-primary);
-    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+    /* overflow: hidden foi removido para não cortar tooltips */
 }
 
 /* --- Content Sections --- */
