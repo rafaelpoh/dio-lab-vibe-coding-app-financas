@@ -57,7 +57,7 @@ h1, h2, h3, h4 {
 .tooltip-icon::after {
     content: attr(data-tooltip);
     position: absolute;
-    bottom: 130%;
+    top: 130%; /* Modificado para aparecer abaixo do ícone */
     right: 0; /* Ancorar pela direita para evitar vazar na tela */
     background: var(--bg-tertiary);
     color: var(--text-primary);
