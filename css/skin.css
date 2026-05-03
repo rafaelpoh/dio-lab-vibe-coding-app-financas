@@ -58,16 +58,15 @@ h1, h2, h3, h4 {
     content: attr(data-tooltip);
     position: absolute;
     bottom: 130%;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 0; /* Ancorar pela direita para evitar vazar na tela */
     background: var(--bg-tertiary);
     color: var(--text-primary);
     padding: 0.5rem 0.75rem;
     border-radius: var(--radius-md);
     font-size: 0.75rem;
     font-weight: 400;
-    width: max-content;
-    max-width: 220px;
+    width: 200px; /* Largura fixa impede estouro */
+    white-space: normal;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-color);
     opacity: 0;
@@ -75,7 +74,7 @@ h1, h2, h3, h4 {
     pointer-events: none;
     transition: opacity var(--transition-fast), visibility var(--transition-fast);
     z-index: 50;
-    text-align: center;
+    text-align: left;
     line-height: 1.4;
 }
 

@@ -128,8 +128,8 @@ async function loadDashboard(userId) {
             data.categories.forEach(cat => {
                 const nameSpan = createElementSafe('span', {}, cat.name);
                 const valueSpan = createElementSafe('span', { 
-                    className: cat.current > cat.limit ? 'danger' : 'success' 
-                }, `${formatCurrency(cat.current)} / ${formatCurrency(cat.limit)}`);
+                    className: cat.current > 0 ? 'danger' : '' 
+                }, formatCurrency(cat.current));
                 
                 const item = createElementSafe('li', { className: 'category-item' }, [nameSpan, valueSpan]);
                 categoryList.appendChild(item);
