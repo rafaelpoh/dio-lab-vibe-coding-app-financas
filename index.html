@@ -63,7 +63,7 @@
             <section id="chat-section" class="content-section active">
                 <header class="section-header">
                     <h3 style="display: flex; align-items: center;">Conversa Financeira 
-                        <span class="tooltip-icon" title="Como usar: Digite seus gastos (Ex: 'Gastei 50 com pizza'), receitas ('Recebi 1000 de salário') ou peça conselhos de investimento. Você também pode pedir para zerar sua conta.">?</span>
+                        <span class="tooltip-icon" data-tooltip="Como usar: Digite seus gastos (Ex: 'Gastei 50 com pizza'), receitas ('Recebi 1000 de salário') ou peça conselhos de investimento. Você também pode pedir para zerar sua conta.">?</span>
                     </h3>
                     <div class="balance-badge">Saldo: R$ <span id="current-balance">0,00</span></div>
                 </header>
@@ -89,26 +89,26 @@
             <section id="dashboard-section" class="content-section hidden">
                 <header class="section-header">
                     <h3 style="display: flex; align-items: center;">Dashboard
-                        <span class="tooltip-icon" title="Este painel é atualizado automaticamente conforme você conversa com o Agente Financeiro.">?</span>
+                        <span class="tooltip-icon" data-tooltip="Este painel é atualizado automaticamente conforme você conversa com o Agente Financeiro.">?</span>
                     </h3>
                 </header>
                 <div class="dashboard-cards">
                     <div class="card summary-card">
-                        <h4 style="display: flex; align-items: center;">Receitas <span class="tooltip-icon" title="Todo dinheiro que você relatou ter recebido no chat (ex: salário, presentes, freelas).">?</span></h4>
+                        <h4 style="display: flex; align-items: center;">Receitas <span class="tooltip-icon" data-tooltip="Todo dinheiro que você relatou ter recebido no chat (ex: salário, presentes, freelas).">?</span></h4>
                         <p class="value success">R$ <span id="total-income">0,00</span></p>
                     </div>
                     <div class="card summary-card">
-                        <h4 style="display: flex; align-items: center;">Despesas <span class="tooltip-icon" title="A soma de todos os seus gastos reportados.">?</span></h4>
+                        <h4 style="display: flex; align-items: center;">Despesas <span class="tooltip-icon" data-tooltip="A soma de todos os seus gastos reportados.">?</span></h4>
                         <p class="value danger">R$ <span id="total-expense">0,00</span></p>
                     </div>
                     <div class="card summary-card">
-                        <h4 style="display: flex; align-items: center;">Investimentos <span class="tooltip-icon" title="Valores que você decidiu guardar ou aplicar, separados das despesas comuns.">?</span></h4>
+                        <h4 style="display: flex; align-items: center;">Investimentos <span class="tooltip-icon" data-tooltip="Valores que você decidiu guardar ou aplicar, separados das despesas comuns.">?</span></h4>
                         <p class="value investment">R$ <span id="total-investment">0,00</span></p>
                     </div>
                 </div>
                 
                 <div class="card chart-card">
-                    <h4 style="display: flex; align-items: center;">Distribuição da Carteira <span class="tooltip-icon" title="Uma visão gráfica de como seu dinheiro está sendo dividido.">?</span></h4>
+                    <h4 style="display: flex; align-items: center;">Distribuição da Carteira <span class="tooltip-icon" data-tooltip="Uma visão gráfica de como seu dinheiro está sendo dividido.">?</span></h4>
                     <div id="dashboard-chart" class="pie-chart"></div>
                     <div class="chart-legend">
                         <div class="legend-item"><div class="legend-color" style="background: var(--success-color)"></div> Receitas</div>

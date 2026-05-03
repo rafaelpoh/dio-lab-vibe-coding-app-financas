@@ -38,36 +38,44 @@ module.exports = async (req, res) => {
         let expense = 0;
         let investment = 0;
         const categoryTotals = {};
+        const categoryBudgets = {};
 
         transactions.forEach(t => {
             if (t.type === 'income') {
                 income += t.amount;
             } else if (t.type === 'investment') {
                 investment += t.amount;
-            } else {
+            } else if (t.type === 'budget') {
+                categoryBudgets[t.category] = t.amount;
+            } else if (t.type === 'expense') {
                 expense += t.amount;
                 if (!categoryTotals[t.category]) categoryTotals[t.category] = 0;
                 categoryTotals[t.category] += t.amount;
             }
         });
 
-        // Formatar para o frontend (Categorias fixas simulando um "limite")
-        const categoriesArray = Object.keys(categoryTotals).map((name, idx) => {
-            // Um limite falso (ex: 1000) apenas para o gráfico do frontend
-            const limit = 1000 + (idx * 200); 
+        // Formatar para o frontend (com Limites Reais do Banco de Dados)
+        const categoriesArray = Object.keys(categoryTotals).map((name) => {
+            // Se existir um budget configurado pelo usuário, usa ele. Senão, padrão de 1000.
+            const limit = categoryBudgets[name] !== undefined ? categoryBudgets[name] : 1000; 
             return {
-                id: idx,
+                id: Math.random(),
                 name,
                 limit,
                 current: categoryTotals[name]
             };
         });
 
-        // Garantir categorias padrão mesmo sem gastos
+        // Garantir categorias padrão e categorias com budget configurado
         const defaultCats = ['Alimentação', 'Transporte', 'Lazer'];
-        defaultCats.forEach(cat => {
+        
+        // Juntar as categorias com budget às padrão
+        const allCategoriesToEnsure = new Set([...defaultCats, ...Object.keys(categoryBudgets)]);
+        
+        allCategoriesToEnsure.forEach(cat => {
             if (!categoriesArray.find(c => c.name === cat)) {
-                categoriesArray.push({ id: Math.random(), name: cat, limit: 1000, current: 0 });
+                const limit = categoryBudgets[cat] !== undefined ? categoryBudgets[cat] : 1000;
+                categoriesArray.push({ id: Math.random(), name: cat, limit, current: 0 });
             }
         });
 

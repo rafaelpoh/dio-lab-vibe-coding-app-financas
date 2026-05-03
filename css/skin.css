@@ -37,6 +37,7 @@ h1, h2, h3, h4 {
 
 /* --- Tooltip Icons --- */
 .tooltip-icon {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -51,6 +52,36 @@ h1, h2, h3, h4 {
     cursor: help;
     border: 1px solid var(--border-color);
     transition: all var(--transition-fast);
+}
+
+.tooltip-icon::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 400;
+    width: max-content;
+    max-width: 220px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+    z-index: 50;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.tooltip-icon:hover::after {
+    opacity: 1;
+    visibility: visible;
 }
 
 .tooltip-icon:hover {

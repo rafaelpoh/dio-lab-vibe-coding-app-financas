@@ -42,6 +42,7 @@ module.exports = async (req, res) => {
         3. A resposta deve ser curta, como uma mensagem de chat.
         4. SE o usuário pedir para zerar, resetar, limpar ou apagar a carteira/saldo/gastos, você deve entender isso como uma ação de reset. Defina o "type" como "reset" e o "amount" como 0.
         5. SE o usuário perguntar sobre investimentos ou decidir investir um valor: classifique como type "investment". Forneça uma dica educacional, mas INCLUA UM ALERTA CLARO sobre os riscos do mercado financeiro e recomende estudar antes de aplicar.
+        6. SE o usuário pedir para definir, alterar, ajustar ou criar um limite/meta de gastos para uma categoria (ex: "Minha meta de lazer é 500"): classifique como type "budget" e coloque o valor estipulado no "amount".
         
         A mensagem do usuário foi: "${message}"
         
@@ -50,8 +51,8 @@ module.exports = async (req, res) => {
           "amount": <numero float, ex: 35.50 ou 0 para reset>,
           "category": "<Uma categoria fixa: Alimentação, Transporte, Lazer, Saúde, Moradia, Outros, Renda, Investimento ou Reset>",
           "description": "<breve descricao>",
-          "type": "<expense, income, investment ou reset>",
-          "botMessage": "<Sua mensagem amigável com alerta de risco se for investimento>"
+          "type": "<expense, income, investment, budget ou reset>",
+          "botMessage": "<Sua mensagem amigável>"
         }
         `;
 
