@@ -73,7 +73,7 @@ h1, h2, h3, h4 {
     visibility: hidden;
     pointer-events: none;
     transition: opacity var(--transition-fast), visibility var(--transition-fast);
-    z-index: 50;
+    z-index: 9999;
     text-align: left;
     line-height: 1.4;
 }
