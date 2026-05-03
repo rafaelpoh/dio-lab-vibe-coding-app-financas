@@ -36,7 +36,7 @@ export function initChat(userId) {
             window.dispatchEvent(new CustomEvent('transactionAdded'));
         } catch (error) {
             removeTypingIndicator(typingId);
-            appendMessage("Desculpe, tive um problema de conexão. Tente novamente.", 'bot');
+            appendMessage(`❌ Ops: ${error.message}`, 'bot');
         }
 
         scrollToBottom(chatHistory);
