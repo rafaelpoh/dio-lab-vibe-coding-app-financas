@@ -38,15 +38,12 @@ module.exports = async (req, res) => {
         let expense = 0;
         let investment = 0;
         const categoryTotals = {};
-        const categoryBudgets = {};
 
         transactions.forEach(t => {
             if (t.type === 'income') {
                 income += t.amount;
             } else if (t.type === 'investment') {
                 investment += t.amount;
-            } else if (t.type === 'budget') {
-                categoryBudgets[t.category] = t.amount;
             } else if (t.type === 'expense') {
                 expense += t.amount;
                 if (!categoryTotals[t.category]) categoryTotals[t.category] = 0;
@@ -54,28 +51,20 @@ module.exports = async (req, res) => {
             }
         });
 
-        // Formatar para o frontend (com Limites Reais do Banco de Dados)
+        // Formatar para o frontend
         const categoriesArray = Object.keys(categoryTotals).map((name) => {
-            // Se existir um budget configurado pelo usuário, usa ele. Senão, padrão de 1000.
-            const limit = categoryBudgets[name] !== undefined ? categoryBudgets[name] : 1000; 
             return {
                 id: Math.random(),
                 name,
-                limit,
                 current: categoryTotals[name]
             };
         });
 
-        // Garantir categorias padrão e categorias com budget configurado
+        // Garantir categorias padrão mesmo sem gastos
         const defaultCats = ['Alimentação', 'Transporte', 'Lazer'];
-        
-        // Juntar as categorias com budget às padrão
-        const allCategoriesToEnsure = new Set([...defaultCats, ...Object.keys(categoryBudgets)]);
-        
-        allCategoriesToEnsure.forEach(cat => {
+        defaultCats.forEach(cat => {
             if (!categoriesArray.find(c => c.name === cat)) {
-                const limit = categoryBudgets[cat] !== undefined ? categoryBudgets[cat] : 1000;
-                categoriesArray.push({ id: Math.random(), name: cat, limit, current: 0 });
+                categoriesArray.push({ id: Math.random(), name: cat, current: 0 });
             }
         });
 

@@ -1,118 +1,59 @@
-# 💸 App de Organização de Finanças Pessoais com Vibe Coding
+# 💸 Agente Financeiro Inteligente
 
-Aprenda a **criar soluções com IA** de forma criativa, guiando ferramentas como o **Copilot** e o **Lovable** com uma comunicação simples e natural. O foco é desenvolver o conceito de um **App de Organização de Finanças Pessoais**, mas, acima de tudo, aprender o **jeito Vibe de programar com IA**.
+Um aplicativo de controle financeiro moderno e inteligente, construído com foco em **Performance** (Vanilla JS/CSS) e **Arquitetura Serverless**. A principal proposta é eliminar a necessidade de planilhas complexas ou formulários longos: você simplesmente *conversa* com uma Inteligência Artificial, e ela organiza todo o seu dinheiro.
 
-## ✨ O que é Vibe Coding
+## 🚀 Como Funciona
 
-**Vibe Coding** é uma forma leve e criativa de desenvolver com IA, baseada em **conversas naturais e bem estruturadas**. Você não precisa escrever código linha por linha. Em vez disso, aprende a **guiar a IA** descrevendo suas ideias de forma clara, com **intenção e contexto**. Em outras palavras:
+Em vez de preencher formulários com valores, categorias e datas, você interage com o **Agente Financeiro (Google Gemini)** via Chat. O agente interpreta a linguagem natural, extrai os dados estruturados e os salva e categoriza automaticamente no seu Dashboard.
 
-> Você mostra a vibe da sua ideia e a IA transforma em solução (ou em um caminho para ela).
+**Exemplos de Interação:**
+- *"Gastei R$ 45 com pizza ontem"* -> O Agente registra uma **Despesa** na categoria **Alimentação**.
+- *"Recebi 2000 reais de salário"* -> O Agente registra uma **Receita**.
+- *"Tenho 1000 reais, onde devo investir?"* -> O Agente atua como consultor, fornecendo dicas com **alertas de risco de mercado** e já salva o valor na nova aba de Investimentos.
+- *"Zere a minha carteira"* -> O Agente atende seu comando e reinicia sua conta, apagando os registros de teste.
 
-## 🎯 Desafio
+## ✨ Principais Recursos
 
-Problema: Muitas pessoas não conseguem manter um controle financeiro porque os aplicativos exigem muita entrada de dados manual, e a criação de orçamentos é vista como algo tedioso. 
+- **🤖 Inteligência Artificial Integrada:** Processamento de linguagem natural focado e rápido usando o modelo mais avançado `gemini-2.5-flash` via API do Google.
+- **📊 Dashboard Dinâmico:** Um painel visual, sem a necessidade de refresh na página, que exibe Receitas, Despesas e Investimentos.
+- **🎨 Gráfico Vanilla CSS:** Um belíssimo gráfico de distribuição da carteira construído 100% com matemática JavaScript nativa e a propriedade `conic-gradient` do CSS3 (zero bibliotecas externas pesadas).
+- **☁️ Arquitetura Serverless:** Rotas de backend (`/api`) seguras, escaláveis e prontas para rodar no ambiente Vercel.
+- **🗄️ Persistência no MongoDB:** Banco de dados ágil para armazenar o histórico de conversas financeiras de cada usuário.
+- **🌗 Dark Mode e Temas:** Alternância de tema fluida utilizando variáveis de CSS nativo.
+- **💡 Hover Cards (CSS Tooltips):** Instruções elegantes e velozes espalhadas pela interface, feitas inteiramente em CSS (Hover e z-index), sem depender de renderização JS.
 
-Precisamos de uma solução que permita **controlar as finanças por meio de uma conversa simples**, com **agentes de IA** capazes de criar **planos de economia personalizados e automatizados**. Você deve utilizar as ideias de **Vibe Coding** e **MVP (Produto Mínimo Viável)** para desenvolver o **conceito de um aplicativo** que resolva o problema citado.
+## 🛠️ Tecnologias Utilizadas
 
-> [!IMPORTANT]
-> Você **não precisa construir o código**! O foco está em **usar a IA como sua parceira criativa**, transformando boas ideias e prompts em conceitos funcionais que simulam um produto real.
+- **Frontend:** HTML5 Semântico, CSS3 Moderno e JavaScript Vanilla (ES6 Modules e Event Delegation).
+- **Backend:** Node.js (Vercel Serverless Functions).
+- **Banco de Dados:** MongoDB Atlas (pacote `mongodb`).
+- **IA:** SDK Oficial do Google Gemini (`@google/generative-ai`).
 
-## 🪄 Etapas do Desafio
+## ⚙️ Como Rodar Localmente (Desenvolvimento)
 
-### 1. Saber o que Pedir é a Chave! Otimize seus Prompts!
+Para rodar este projeto em sua máquina local simulando a exata arquitetura Serverless:
 
-Antes de pedir para a IA "criar um app", é importante definir com clareza o que você quer construir e por quê. Para isso, você vai criar um **PRD (Product Requirements Document)** simplificado, uma especificação que serve como _briefing_ para a IA entender sua ideia.
-
-Um bom PRD deve descrever o problema, quem será beneficiado, as principais funcionalidades e o que você espera que a IA entregue. Use o modelo abaixo como ponto de partida e adapte conforme o seu estilo:
-
-```txt
-# Contexto
-Quero criar um aplicativo de Organização de Finanças Pessoais que funcione por meio de conversas com o usuário.  
-A ideia é facilitar o controle financeiro de forma simples e natural, sem formulários manuais ou planilhas complexas.
-
-# Problema
-Muitas pessoas desistem de controlar seus gastos porque os apps atuais exigem muita entrada manual e pouca personalização.  
-Quero resolver isso com uma experiência de conversa e recomendações automáticas de economia.
-
-# Público-Alvo
-Pessoas que querem começar a organizar suas finanças de forma prática e sem complicação, principalmente iniciantes.
-
-# Funcionalidades-Chave
-1. Registrar gastos via chat em linguagem natural.  
-2. Classificar automaticamente as transações.  
-3. Definir e acompanhar metas financeiras.  
-4. Receber dicas de economia do “Agente Financeiro”.  
-5. Visualizar relatórios simples e personalizados.
-
-# Entregável da IA
-Gerar um plano de MVP com as principais telas, recursos necessários e um esboço de validação inicial.  
-Usar tom educativo e linguagem acessível, em português.
-```
-
-Depois de preencher o modelo, use o Copilot Web para revisar e melhorar o seu prompt antes de ir ao Lovable. A ideia é lapidar o texto até que ele fique claro, direto e reflita exatamente a sua intenção.
-
-> [!TIP]
-> Pense no PRD/Prompt como “o briefing que a IA precisa para entender sua vibe”. Portanto, quanto mais claro e intencional for o texto, mais próximas do ideal serão as respostas da IA.
-
-### 2. Explorando o Lovable na Prática
-
-Com seu PRD pronto e revisado, é hora de colocar a IA em ação. Abra o Lovable, cole seu prompt completo e peça o plano inicial do MVP do seu aplicativo. Como o plano gratuito limita você a 5 interações por dia, seja estratégico:
-- Faça perguntas diretas e construtivas, como “crie o fluxo de telas com base nas funcionalidades listadas” ou “gere uma versão resumida do plano de MVP”;
-- Priorize clareza nas instruções para aproveitar ao máximo cada resposta;
-
-Durante essa etapa, você pode orientar a IA para três entregas principais:
-1. Agente Financeiro: defina o comportamento e o tom de voz de um consultor financeiro pessoal, alinhado ao público e objetivo do app.
-2. Fluxo de Telas: peça à IA para gerar o fluxo conceitual de telas com base nas funcionalidades descritas no PRD, simulando a interação por conversa.
-3. Plano de MVP: solicite um resumo das 5 funcionalidades principais, dos recursos necessários e um plano de validação inicial (como medir se o app cumpre seu propósito).
-
-> [!TIP]
-> Se preferir, você pode fazer tudo com o **Copilot**. O importante é exercitar a habilidade de transformar intenções em instruções claras e testar os limites da IA como parceira criativa.
-
-### 3. Entregando o Desafio na DIO
-
-Finalize seu projeto criando um **repositório no GitHub** (pode ser um **fork** deste).  
-No README do seu repositório, inclua:
-
-- Seu **prompt final** (PRD);  
-- Prints ou pequenos vídeos das interações com a IA;  
-- Um resumo do que o seu **App de Finanças Pessoais** faz;  
-- Uma breve **reflexão sobre o processo**:
-  - O que funcionou bem?  
-  - O que não funcionou como o esperado?  
-  - O que aprendeu sobre conversar com IAs?
-
-> [!TIP]
-> Publique seu repositório e compartilhe o link na plataforma da DIO! Sua entrega é a prova de que você domina o raciocínio de Vibe Coding, mesmo sem escrever uma única linha de código.
-
-## 💬 Conclusão
-
-Vibe Coding é sobre clareza, curiosidade e criatividade, não sobre perfeição técnica. O verdadeiro objetivo aqui é aprender a pensar junto com a IA, transformando ideias em conceitos reais e enxergando a tecnologia como uma extensão do seu raciocínio criativo. Cada interação é um experimento, quanto mais clara for sua intenção, mais surpreendente será o resultado.
-
----
-
-## 🚀 Como Rodar o App (Vercel + Gemini + MongoDB)
-
-Este projeto foi evoluído para utilizar a Vercel com Serverless Functions.
-
-1. Instale as dependências localmente:
+1. **Instale as dependências e o Vercel CLI:**
    ```bash
    npm install
+   npm install -g vercel
    ```
 
-2. Configure suas variáveis de ambiente:
-   Copie o arquivo `.env.example` para `.env` e insira suas chaves do Gemini e do MongoDB:
-   ```bash
-   cp .env.example .env
+2. **Configure as Variáveis de Ambiente:**
+   Crie um arquivo chamado `.env` na pasta principal do projeto (ele não subirá para o github) contendo as seguintes chaves reais:
+   ```env
+   MONGODB_URI="sua_string_de_conexao_do_mongodb_atlas"
+   GEMINI_API_KEY="sua_chave_do_google_ai_studio"
    ```
 
-3. Instale o Vercel CLI (se ainda não tiver):
-   ```bash
-   npm i -g vercel
-   ```
-
-4. Rode o ambiente de desenvolvimento local:
+3. **Inicie o Servidor:**
    ```bash
    vercel dev
    ```
-   
-O projeto estará rodando localmente (geralmente em `http://localhost:3000`), processando o backend Serverless na pasta `/api` e o frontend em JS Vanilla.
+   Acesse no navegador: `http://localhost:3000`.
+
+## 📦 Deploy na Vercel
+
+A infraestrutura está otimizada para CI/CD via **Vercel**. 
+Basta fazer o push (envio) deste código para o seu repositório do GitHub e vincular na Vercel. A plataforma vai detectar a pasta `api/` automaticamente e gerar os endpoints serverless.
+Lembre-se apenas de preencher as variáveis de ambiente (`MONGODB_URI` e `GEMINI_API_KEY`) diretamente nas configurações do projeto lá no painel da Vercel.
