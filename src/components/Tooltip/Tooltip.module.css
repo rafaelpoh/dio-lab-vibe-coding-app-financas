@@ -1,0 +1,54 @@
+/* src/components/Tooltip/Tooltip.module.css */
+.tooltipContainer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  margin-left: var(--spacing-sm);
+  cursor: help;
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-fast);
+}
+
+.tooltipContainer:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  z-index: 99;
+}
+
+.tooltipText {
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  padding: var(--spacing-sm) 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  width: 220px;
+  white-space: normal;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), visibility var(--transition-fast);
+  z-index: 9999;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.tooltipContainer:hover .tooltipText {
+  opacity: 1;
+  visibility: visible;
+}

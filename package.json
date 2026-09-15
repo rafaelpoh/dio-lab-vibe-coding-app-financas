@@ -1,10 +1,11 @@
 {
   "name": "dio-lab-vibe-coding-app-financas",
   "version": "1.0.0",
-  "description": "Aprenda a **criar soluções com IA** de forma criativa, guiando ferramentas como o **Copilot** e o **Lovable** com uma comunicação simples e natural. O foco é desenvolver o conceito de um **App de Organização de Finanças Pessoais**, mas, acima de tudo, aprender o **jeito Vibe de programar com IA**.",
-  "main": "index.js",
+  "description": "App de Organização de Finanças Pessoais com Agente Inteligente, adaptado para React 18+, TypeScript e Vite.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -13,13 +14,20 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/rafaelpoh/dio-lab-vibe-coding-app-financas/issues"
-  },
-  "homepage": "https://github.com/rafaelpoh/dio-lab-vibe-coding-app-financas#readme",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "mongodb": "^7.2.0"
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11"
   }
 }

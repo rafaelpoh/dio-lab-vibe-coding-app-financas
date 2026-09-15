@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-15T20:35:00Z",
+  "title": "Design System: Agente Financeiro Inteligente",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Active Cobalt",
+        "canonical": "#3b82f6",
+        "tonalRamp": [
+          "#1d4ed8",
+          "#2563eb",
+          "#3b82f6",
+          "#60a5fa",
+          "#93c5fd",
+          "#bfdbfe",
+          "#dbeafe",
+          "#eff6ff"
+        ]
+      },
+      "investment": {
+        "role": "secondary",
+        "displayName": "Vibrant Amethyst",
+        "canonical": "#8b5cf6",
+        "tonalRamp": [
+          "#5b21b6",
+          "#6d28d9",
+          "#7c3aed",
+          "#8b5cf6",
+          "#a78bfa",
+          "#c4b5fd",
+          "#ddd6fe",
+          "#ede9fe"
+        ]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Emerald Income",
+        "canonical": "#10b981",
+        "tonalRamp": [
+          "#047857",
+          "#059669",
+          "#10b981",
+          "#34d399",
+          "#6ee7b7",
+          "#a7f3d0",
+          "#d1fae5",
+          "#ecfdf5"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero and brand titles with tight hierarchy."
+      },
+      "body": {
+        "displayName": "Body Text",
+        "purpose": "Conversational messages and instructions."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-low",
+        "value": "0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05)",
+        "purpose": "Resting elements and soft cards."
+      },
+      {
+        "name": "ambient-medium",
+        "value": "0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.06)",
+        "purpose": "Elevated dashboard cards and tooltips."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-smooth",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Default exponential ease-out for tactile transitions."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tablet",
+        "value": "768px"
+      },
+      {
+        "name": "desktop",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ação principal com elevação tátil e foco visível.",
+      "html": "<button class=\"ds-btn-primary\">Salvar Transação</button>",
+      "css": ".ds-btn-primary { background: #3b82f6; color: #ffffff; padding: 12px 16px; border-radius: 8px; font-weight: 500; font-family: 'Manrope', sans-serif; border: none; cursor: pointer; transition: background 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s ease; } .ds-btn-primary:hover { background: #2563eb; transform: translateY(-1px); } .ds-btn-primary:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "Balance Badge",
+      "kind": "chip",
+      "refersTo": "badge-balance",
+      "description": "Indicador de saldo com numerais tabulares.",
+      "html": "<span class=\"ds-balance-badge\">Saldo: R$ 2.450,00</span>",
+      "css": ".ds-balance-badge { background: #f1f5f9; color: #0f172a; padding: 4px 16px; border-radius: 9999px; font-weight: 600; font-size: 0.875rem; border: 1px solid #e2e8f0; font-family: 'Manrope', sans-serif; font-variant-numeric: tabular-nums; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Frictionless Financial Atelier",
+    "overview": "O Agente Financeiro Inteligente adota uma filosofia de clareza cirúrgica e ausência total de ruído visual. O ambiente prioriza o ritmo do diálogo financeiro e a imediata compreensão do estado patrimonial.",
+    "keyCharacteristics": [
+      "Tipografia Manrope com numerais tabulares rigorosos para alinhamento financeiro.",
+      "Camadas suaves de elevação em vez de sombras pesadas ou bordas agressivas.",
+      "Superfícies de navegador totalmente integradas à paleta da marca.",
+      "Feedback microinterativo táctil em cada botão e campo interativo."
+    ],
+    "rules": [
+      {
+        "name": "The Pure Semantic Hue Rule",
+        "body": "Cores de status são reservadas exclusivamente para representação de fluxos monetários.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Money Rule",
+        "body": "Todo valor monetário deve obrigatoriamente renderizar com numerais tabulares.",
+        "section": "typography"
+      },
+      {
+        "name": "The Layered Light Rule",
+        "body": "Toda sombra deve carregar deslocamento vertical e desfoque suave.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do aplicar font-variant-numeric: tabular-nums em qualquer elemento que represente dinheiro ou percentuais.",
+      "Do utilizar variáveis CSS de tokens.css para toda e qualquer declaração de cor, espaço e sombra.",
+      "Do garantir que todo elemento interativo possua tratamento visual refinado para :hover, :active e :focus-visible."
+    ],
+    "donts": [
+      "Don't utilizar fontes genéricas e saturadas (Inter, Roboto, Geist).",
+      "Don't utilizar innerHTML ou injeções de HTML dinâmico sob qualquer hipótese.",
+      "Don't aplicar gradientes em textos ou sombras neon puramente decorativas."
+    ]
+  }
+}

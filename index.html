@@ -1,140 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agente Financeiro - MVP</title>
-    <!-- Ícone da Página -->
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <!-- Ordem estrita do CSS conforme spec.md -->
-    <link rel="stylesheet" href="css/reset.css">
-    <link rel="stylesheet" href="css/var.css">
-    <link rel="stylesheet" href="css/skin.css">
-</head>
-<body>
-
-    <!-- Tela de Login -->
-    <main id="login-view" class="view-container active">
-        <div class="login-card">
-            <div class="login-header">
-                <h1>Agente Financeiro</h1>
-                <p>O seu controle financeiro simples e inteligente.</p>
-                <div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-secondary); background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-md); text-align: left; line-height: 1.5; border: 1px solid var(--border-color);">
-                    <strong>💡 Como acessar:</strong> Se este for o seu <strong>primeiro acesso</strong>, basta digitar um nome de usuário único e uma senha para criar sua conta automaticamente.<br><br>
-                    Nos próximos acessos, utilize exatamente esses mesmos dados para entrar e ver sua carteira.
-                </div>
-            </div>
-            <form id="login-form" class="login-form">
-                <div class="input-group">
-                    <label for="username">Usuário</label>
-                    <input type="text" id="username" placeholder="Digite seu usuário" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Senha</label>
-                    <input type="password" id="password" placeholder="Digite sua senha" required>
-                </div>
-                <button type="submit" class="btn-primary">Entrar</button>
-            </form>
-            <button id="theme-toggle-login" class="btn-icon theme-toggle" aria-label="Mudar Tema">
-                <!-- Ícone de Lua por padrão -->
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-            </button>
-        </div>
-    </main>
-
-    <!-- App Principal -->
-    <main id="app-view" class="view-container hidden">
-        
-        <!-- Sidebar / Menu -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Agente<br>Financeiro</h2>
-            </div>
-            <nav class="sidebar-nav">
-                <button class="nav-item active" data-target="chat">Chat</button>
-                <button class="nav-item" data-target="dashboard">Dashboard</button>
-            </nav>
-            <div class="sidebar-footer">
-                <button id="theme-toggle-app" class="btn-icon theme-toggle" aria-label="Mudar Tema">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                </button>
-                <button id="logout-btn" class="btn-secondary">Sair</button>
-            </div>
-        </aside>
-
-        <!-- Conteúdo Principal -->
-        <div class="main-content">
-            
-            <!-- Visão de Chat -->
-            <section id="chat-section" class="content-section active">
-                <header class="section-header">
-                    <h3 style="display: flex; align-items: center;">Conversa Financeira 
-                        <span class="tooltip-icon" data-tooltip="Como usar: Digite seus gastos (Ex: 'Gastei 50 com pizza'), receitas ('Recebi 1000 de salário') ou peça conselhos de investimento. Você também pode pedir para zerar sua conta.">?</span>
-                    </h3>
-                    <div class="balance-badge">Saldo: R$ <span id="current-balance">0,00</span></div>
-                </header>
-                
-                <div id="chat-history" class="chat-history">
-                    <!-- Mensagens mockadas aparecerão aqui via JS -->
-                    <div class="message bot">
-                        <div class="message-bubble">
-                            Olá! Sou seu Agente Financeiro. Me conte o que você gastou hoje ou se recebeu algum dinheiro. Ex: "Gastei R$ 30 com almoço".
-                        </div>
-                    </div>
-                </div>
-
-                <form id="chat-form" class="chat-input-area">
-                    <input type="text" id="chat-input" placeholder="Digite sua mensagem..." autocomplete="off">
-                    <button type="submit" class="btn-primary btn-send" aria-label="Enviar">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                    </button>
-                </form>
-            </section>
-
-            <!-- Visão de Dashboard -->
-            <section id="dashboard-section" class="content-section hidden">
-                <header class="section-header">
-                    <h3 style="display: flex; align-items: center;">Dashboard
-                        <span class="tooltip-icon" data-tooltip="Este painel é atualizado automaticamente conforme você conversa com o Agente Financeiro.">?</span>
-                    </h3>
-                </header>
-                <div class="dashboard-cards">
-                    <div class="card summary-card">
-                        <h4 style="display: flex; align-items: center;">Receitas <span class="tooltip-icon" data-tooltip="Todo dinheiro que você relatou ter recebido no chat (ex: salário, presentes, freelas).">?</span></h4>
-                        <p class="value success">R$ <span id="total-income">0,00</span></p>
-                    </div>
-                    <div class="card summary-card">
-                        <h4 style="display: flex; align-items: center;">Despesas <span class="tooltip-icon" data-tooltip="A soma de todos os seus gastos reportados.">?</span></h4>
-                        <p class="value danger">R$ <span id="total-expense">0,00</span></p>
-                    </div>
-                    <div class="card summary-card">
-                        <h4 style="display: flex; align-items: center;">Investimentos <span class="tooltip-icon" data-tooltip="Valores que você decidiu guardar ou aplicar, separados das despesas comuns.">?</span></h4>
-                        <p class="value investment">R$ <span id="total-investment">0,00</span></p>
-                    </div>
-                </div>
-                
-                <div class="card chart-card">
-                    <h4 style="display: flex; align-items: center;">Distribuição da Carteira <span class="tooltip-icon" data-tooltip="Uma visão gráfica de como seu dinheiro está sendo dividido.">?</span></h4>
-                    <div id="dashboard-chart" class="pie-chart"></div>
-                    <div class="chart-legend">
-                        <div class="legend-item"><div class="legend-color" style="background: var(--success-color)"></div> Receitas</div>
-                        <div class="legend-item"><div class="legend-color" style="background: var(--danger-color)"></div> Despesas</div>
-                        <div class="legend-item"><div class="legend-color" style="background: var(--investment-color)"></div> Investimentos</div>
-                    </div>
-                </div>
-                
-                <div class="card report-card" style="margin-top: 1.5rem;">
-                    <h4>Despesas por Categoria (Neste Mês)</h4>
-                    <ul id="category-list" class="category-list">
-                        <!-- Categorias fixas serão injetadas via JS -->
-                    </ul>
-                </div>
-            </section>
-
-        </div>
-    </main>
-
-    <!-- Scripts (Carregados no fim do body / com defer) -->
-    <script type="module" src="js/main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Agente Financeiro Inteligente - Gerenciamento e controle de finanças pessoais via conversação assistida por IA." />
+    <title>Agente Financeiro Inteligente</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

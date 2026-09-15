@@ -1,17 +1,5 @@
-// api/dashboard.js
-const { MongoClient } = require('mongodb');
-
-let cachedDb = null;
-
-async function connectToDatabase() {
-    if (cachedDb) return cachedDb;
-    if (!process.env.MONGODB_URI) throw new Error('MONGODB_URI não definida');
-    
-    const client = new MongoClient(process.env.MONGODB_URI);
-    await client.connect();
-    cachedDb = client.db('app_financas');
-    return cachedDb;
-}
+// api/dashboard.js - Consulta e agregação analítica no Cloud Firestore
+const { getFirestoreDb } = require('./lib/firebaseAdmin');
 
 module.exports = async (req, res) => {
     // CORS Handling
@@ -27,11 +15,8 @@ module.exports = async (req, res) => {
     if (!userId) return res.status(400).json({ error: 'userId obrigatório' });
 
     try {
-        const db = await connectToDatabase();
-        const transactionsCollection = db.collection('transactions');
-
-        // Buscar todas as transações do usuário
-        const transactions = await transactionsCollection.find({ userId }).toArray();
+        const db = getFirestoreDb();
+        const transactionsSnapshot = await db.collection('transactions').where('userId', '==', userId).get();
 
         // Agrupar dados
         let income = 0;
@@ -39,22 +24,24 @@ module.exports = async (req, res) => {
         let investment = 0;
         const categoryTotals = {};
 
-        transactions.forEach(t => {
+        transactionsSnapshot.forEach((doc) => {
+            const t = doc.data();
+            const amount = Number(t.amount) || 0;
             if (t.type === 'income') {
-                income += t.amount;
+                income += amount;
             } else if (t.type === 'investment') {
-                investment += t.amount;
+                investment += amount;
             } else if (t.type === 'expense') {
-                expense += t.amount;
-                if (!categoryTotals[t.category]) categoryTotals[t.category] = 0;
-                categoryTotals[t.category] += t.amount;
+                expense += amount;
+                const catName = t.category || 'Outros';
+                categoryTotals[catName] = (categoryTotals[catName] || 0) + amount;
             }
         });
 
         // Formatar para o frontend
         const categoriesArray = Object.keys(categoryTotals).map((name) => {
             return {
-                id: Math.random(),
+                id: name,
                 name,
                 current: categoryTotals[name]
             };
@@ -62,9 +49,9 @@ module.exports = async (req, res) => {
 
         // Garantir categorias padrão mesmo sem gastos
         const defaultCats = ['Alimentação', 'Transporte', 'Lazer'];
-        defaultCats.forEach(cat => {
-            if (!categoriesArray.find(c => c.name === cat)) {
-                categoriesArray.push({ id: Math.random(), name: cat, current: 0 });
+        defaultCats.forEach((cat) => {
+            if (!categoriesArray.find((c) => c.name === cat)) {
+                categoriesArray.push({ id: cat, name: cat, current: 0 });
             }
         });
 
