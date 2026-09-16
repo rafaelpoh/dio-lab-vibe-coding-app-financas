@@ -4,6 +4,7 @@ import type { DashboardProps } from './types';
 import { useDashboard } from './hooks/useDashboard';
 import { SummaryCard } from './components/SummaryCard';
 import { PieChart } from './components/PieChart';
+import { BoxesSection } from './components/BoxesSection';
 import { CategoryList } from './components/CategoryList';
 import { Tooltip } from '../../components/Tooltip/Tooltip';
 import styles from './Dashboard.module.css';
@@ -35,7 +36,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ userId, refreshSignal = 0 
       <div className={styles.cardsGrid}>
         <SummaryCard
           title="Receitas"
-          tooltipText="Todo dinheiro que você relatou ter recebido no chat (ex: salário, presentes, freelas)."
+          tooltipText="Receita líquida disponível (total de receitas recebidas deduzindo os valores direcionados a investimentos e caixinhas)."
           amount={data.balance.income}
           variant="success"
         />
@@ -54,6 +55,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ userId, refreshSignal = 0 
           variant="investment"
         />
       </div>
+
+      <BoxesSection boxes={data.boxes} />
 
       <PieChart
         income={data.balance.income}

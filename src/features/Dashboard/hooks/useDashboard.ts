@@ -7,6 +7,7 @@ import type { DashboardData } from '../types';
 const DEFAULT_DASHBOARD_DATA: DashboardData = {
   balance: { income: 0, expense: 0, investment: 0, current: 0 },
   categories: [],
+  boxes: [],
 };
 
 export function useDashboard(userId: string, refreshSignal: number = 0) {

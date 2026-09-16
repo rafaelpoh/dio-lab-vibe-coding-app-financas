@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
         const transactionsSnapshot = await db.collection('transactions').where('userId', '==', userId).get();
 
         // Agrupar dados
-        let income = 0;
+        let rawIncome = 0;
         let expense = 0;
         let investment = 0;
         const categoryTotals = {};
@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
             const t = doc.data();
             const amount = Number(t.amount) || 0;
             if (t.type === 'income') {
-                income += amount;
+                rawIncome += amount;
             } else if (t.type === 'investment') {
                 investment += amount;
             } else if (t.type === 'expense') {
@@ -37,6 +37,9 @@ module.exports = async (req, res) => {
                 categoryTotals[catName] = (categoryTotals[catName] || 0) + amount;
             }
         });
+
+        // A quantia investida é subtraída da Receita para refletir o saldo de receita disponível
+        const income = Math.max(0, rawIncome - investment);
 
         // Formatar para o frontend
         const categoriesArray = Object.keys(categoryTotals).map((name) => {
@@ -55,14 +58,59 @@ module.exports = async (req, res) => {
             }
         });
 
+        // Buscar caixinhas / metas do usuário
+        const boxesSnapshot = await db.collection('boxes').where('userId', '==', userId).get();
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth(); // 0 a 11
+
+        const boxesArray = [];
+        boxesSnapshot.forEach((doc) => {
+            const b = doc.data();
+            const targetAmount = Number(b.targetAmount) || 1000;
+            const currentAmount = Number(b.currentAmount) || 0;
+            const deadlineMonths = Number(b.deadlineMonths) || 12;
+            const monthlyTarget = Number(b.monthlyTarget) || Number((targetAmount / (deadlineMonths || 1)).toFixed(2));
+            const deposits = Array.isArray(b.deposits) ? b.deposits : [];
+
+            // Calcula o valor total guardado no mês atual
+            let savedThisMonth = 0;
+            deposits.forEach((dep) => {
+                if (dep.date) {
+                    const d = new Date(dep.date);
+                    if (d.getFullYear() === currentYear && d.getMonth() === currentMonth) {
+                        savedThisMonth += Number(dep.amount) || 0;
+                    }
+                }
+            });
+
+            // Sinal Verde se guardou o valor mensal (ou no mínimo 95% dele), caso contrário Vermelho
+            const isMonthTargetReached = monthlyTarget > 0 ? (savedThisMonth >= (monthlyTarget * 0.95)) : false;
+            const progressPercentage = targetAmount > 0 ? Math.min(100, Math.round((currentAmount / targetAmount) * 100)) : 0;
+
+            boxesArray.push({
+                id: doc.id,
+                name: b.name || 'Projeto',
+                targetAmount,
+                currentAmount,
+                deadlineMonths,
+                monthlyTarget,
+                progressPercentage,
+                savedThisMonth,
+                isMonthTargetReached
+            });
+        });
+
         const dashboardData = {
             balance: {
                 income,
+                totalIncome: rawIncome,
                 expense,
                 investment,
-                current: income - expense - investment
+                current: income - expense
             },
-            categories: categoriesArray
+            categories: categoriesArray,
+            boxes: boxesArray
         };
 
         return res.status(200).json(dashboardData);
