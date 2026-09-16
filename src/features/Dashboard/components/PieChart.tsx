@@ -53,7 +53,7 @@ export const PieChart: React.FC<PieChartProps> = memo(({
       <div className={styles.chartLegend}>
         <div className={styles.legendItem}>
           <span className={`${styles.legendDot} ${styles.legendSuccess}`} />
-          Receitas
+          Saldo Livre
         </div>
         <div className={styles.legendItem}>
           <span className={`${styles.legendDot} ${styles.legendDanger}`} />

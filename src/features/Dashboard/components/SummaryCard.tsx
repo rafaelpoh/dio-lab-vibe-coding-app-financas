@@ -8,7 +8,7 @@ export interface SummaryCardProps {
   readonly title: string;
   readonly tooltipText: string;
   readonly amount: number;
-  readonly variant: 'success' | 'danger' | 'investment';
+  readonly variant: 'success' | 'danger' | 'investment' | 'balance';
 }
 
 export const SummaryCard: React.FC<SummaryCardProps> = memo(({
@@ -22,7 +22,9 @@ export const SummaryCard: React.FC<SummaryCardProps> = memo(({
       ? styles.successValue
       : variant === 'danger'
       ? styles.dangerValue
-      : styles.investmentValue;
+      : variant === 'investment'
+      ? styles.investmentValue
+      : styles.balanceValue;
 
   return (
     <div className={`${styles.card} ${styles.summaryCard}`}>

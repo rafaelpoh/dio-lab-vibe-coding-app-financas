@@ -78,6 +78,10 @@
   color: var(--color-investment);
 }
 
+.balanceValue {
+  color: var(--color-primary);
+}
+
 /* Gráfico de Visualização */
 .chartCard {
   display: flex;
@@ -488,8 +492,8 @@
   }
 
   .cardsGrid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-lg);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
   }
 
   .boxTopRow {
@@ -500,5 +504,12 @@
 
   .boxesGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cardsGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
   }
 }

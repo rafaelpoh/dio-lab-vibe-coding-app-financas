@@ -38,8 +38,8 @@ module.exports = async (req, res) => {
             }
         });
 
-        // A quantia investida é subtraída da Receita para refletir o saldo de receita disponível
-        const income = Math.max(0, rawIncome - investment);
+        // Saldo líquido disponível em conta: Receitas - Despesas - Investimentos
+        const availableBalance = Math.max(0, Number((rawIncome - expense - investment).toFixed(2)));
 
         // Formatar para o frontend
         const categoriesArray = Object.keys(categoryTotals).map((name) => {
@@ -103,11 +103,11 @@ module.exports = async (req, res) => {
 
         const dashboardData = {
             balance: {
-                income,
+                income: rawIncome,
                 totalIncome: rawIncome,
                 expense,
                 investment,
-                current: income - expense
+                current: availableBalance
             },
             categories: categoriesArray,
             boxes: boxesArray

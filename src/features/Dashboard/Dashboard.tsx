@@ -35,8 +35,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ userId, refreshSignal = 0 
 
       <div className={styles.cardsGrid}>
         <SummaryCard
+          title="Saldo Disponível"
+          tooltipText="Saldo livre disponível em conta para gastos ou novos aportes (Receitas menos Despesas e Investimentos/Caixinhas)."
+          amount={data.balance.current}
+          variant="balance"
+        />
+
+        <SummaryCard
           title="Receitas"
-          tooltipText="Receita líquida disponível (total de receitas recebidas deduzindo os valores direcionados a investimentos e caixinhas)."
+          tooltipText="Total acumulado de receitas recebidas e saldos adicionados."
           amount={data.balance.income}
           variant="success"
         />
@@ -50,7 +57,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ userId, refreshSignal = 0 
 
         <SummaryCard
           title="Investimentos"
-          tooltipText="Valores que você decidiu guardar ou aplicar, separados das despesas comuns."
+          tooltipText="Valores que você decidiu guardar nas caixinhas ou aplicar."
           amount={data.balance.investment}
           variant="investment"
         />
@@ -62,7 +69,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ userId, refreshSignal = 0 
       />
 
       <PieChart
-        income={data.balance.income}
+        income={Math.max(0, data.balance.current)}
         expense={data.balance.expense}
         investment={data.balance.investment}
       />
