@@ -10,7 +10,7 @@ import { Tooltip } from '../../components/Tooltip/Tooltip';
 import styles from './Dashboard.module.css';
 
 export const Dashboard: React.FC<DashboardProps> = ({ userId, refreshSignal = 0 }) => {
-  const { data, isLoading, error } = useDashboard(userId, refreshSignal);
+  const { data, isLoading, error, depositMonthlyTarget } = useDashboard(userId, refreshSignal);
 
   return (
     <section className={styles.section} aria-label="Painel Financeiro">
@@ -56,7 +56,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ userId, refreshSignal = 0 
         />
       </div>
 
-      <BoxesSection boxes={data.boxes} />
+      <BoxesSection
+        boxes={data.boxes}
+        onDepositMonthlyTarget={depositMonthlyTarget}
+      />
 
       <PieChart
         income={data.balance.income}

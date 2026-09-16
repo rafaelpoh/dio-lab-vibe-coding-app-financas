@@ -415,6 +415,60 @@
   font-feature-settings: var(--font-features);
 }
 
+/* Interatividade e Ações no Card Clicável */
+.boxCardClickable {
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.boxCardClickable:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+.boxActionRow {
+  display: flex;
+  margin-top: var(--spacing-xs);
+}
+
+.depositActionButton {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-align: center;
+  transition: background-color var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.actionPending {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.actionPending:hover:not(:disabled) {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverted);
+  transform: translateY(-1px);
+}
+
+.actionCompleted {
+  background-color: var(--color-bg-primary);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+}
+
+.actionCompleted:hover:not(:disabled) {
+  background-color: var(--color-bg-tertiary);
+  transform: translateY(-1px);
+}
+
+.depositActionButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
 /* Responsividade Mobile-First */
 @media (min-width: 768px) {
   .section {

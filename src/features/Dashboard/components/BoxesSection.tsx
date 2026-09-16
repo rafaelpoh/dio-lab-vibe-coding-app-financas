@@ -1,5 +1,5 @@
-// src/features/Dashboard/components/BoxesSection.tsx - Seção de Caixinhas e Metas com Gráficos e Sinalizadores
-import React, { memo } from 'react';
+// src/features/Dashboard/components/BoxesSection.tsx - Seção de Caixinhas e Metas com Cards Clicáveis
+import React, { memo, useState, useCallback } from 'react';
 import type { FinancialBox } from '../types';
 import { formatCurrency } from '../../../utils/formatters';
 import { Tooltip } from '../../../components/Tooltip/Tooltip';
@@ -7,15 +7,34 @@ import styles from '../Dashboard.module.css';
 
 export interface BoxesSectionProps {
   readonly boxes: ReadonlyArray<FinancialBox>;
+  readonly onDepositMonthlyTarget?: (boxId: string, amount: number) => Promise<void>;
 }
 
-export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes }) => {
+export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes, onDepositMonthlyTarget }) => {
+  const [loadingBoxId, setLoadingBoxId] = useState<string | null>(null);
+
+  const handleDeposit = useCallback(
+    async (box: FinancialBox) => {
+      if (!onDepositMonthlyTarget || loadingBoxId) return;
+
+      try {
+        setLoadingBoxId(box.id);
+        await onDepositMonthlyTarget(box.id, box.monthlyTarget);
+      } catch (err) {
+        console.error('Falha ao guardar parcela da caixinha:', err);
+      } finally {
+        setLoadingBoxId(null);
+      }
+    },
+    [onDepositMonthlyTarget, loadingBoxId]
+  );
+
   return (
     <div className={`${styles.card} ${styles.boxesContainer}`}>
       <div className={styles.boxesHeader}>
         <h3 className={styles.boxesTitle}>
           Minhas Caixinhas & Projetos
-          <Tooltip text="Acompanhe suas metas de economia. O sinal verde indica que a parcela do mês já foi guardada e vermelho indica pendência." />
+          <Tooltip text="Clique no card de uma caixinha para guardar a parcela deste mês e trocar o status para verde." />
         </h3>
         <span className={styles.boxesCount}>
           {boxes.length} {boxes.length === 1 ? 'meta ativa' : 'metas ativas'}
@@ -36,9 +55,25 @@ export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes }) => {
           {boxes.map((box) => {
             const pct = Math.min(100, Math.max(0, box.progressPercentage));
             const isReached = box.isMonthTargetReached;
+            const isLoading = loadingBoxId === box.id;
 
             return (
-              <div key={box.id} className={styles.boxCard}>
+              <div
+                key={box.id}
+                className={`${styles.boxCard} ${styles.boxCardClickable}`}
+                onClick={() => void handleDeposit(box)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    void handleDeposit(box);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Caixinha ${box.name}. ${
+                  isReached ? 'Parcela do mês já guardada.' : 'Clique para guardar a parcela deste mês de ' + formatCurrency(box.monthlyTarget)
+                }`}
+              >
                 <div className={styles.boxTopRow}>
                   <div className={styles.boxInfo}>
                     <h4 className={styles.boxName}>{box.name}</h4>
@@ -53,11 +88,6 @@ export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes }) => {
                     className={`${styles.monthStatusBadge} ${
                       isReached ? styles.statusGreen : styles.statusRed
                     }`}
-                    title={
-                      isReached
-                        ? `Meta do mês guardada! (${formatCurrency(box.savedThisMonth)})`
-                        : `Parcela do mês pendente. Guarde ${formatCurrency(box.monthlyTarget)} este mês.`
-                    }
                   >
                     <span
                       className={`${styles.statusDot} ${
@@ -65,7 +95,11 @@ export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes }) => {
                       }`}
                     />
                     <span className={styles.statusLabel}>
-                      {isReached ? 'Parcela do mês guardada' : 'Parcela do mês pendente'}
+                      {isLoading
+                        ? 'Guardando parcela...'
+                        : isReached
+                        ? 'Parcela do mês guardada'
+                        : 'Parcela do mês pendente'}
                     </span>
                   </div>
                 </div>
@@ -112,6 +146,29 @@ export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes }) => {
                     </span>
                   </div>
                 </div>
+
+                {/* Botão de Ação Rápida no Card */}
+                <div className={styles.boxActionRow}>
+                  <button
+                    type="button"
+                    className={`${styles.depositActionButton} ${
+                      isReached ? styles.actionCompleted : styles.actionPending
+                    }`}
+                    disabled={isLoading}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void handleDeposit(box);
+                    }}
+                  >
+                    {isLoading ? (
+                      'Processando...'
+                    ) : isReached ? (
+                      '✓ Parcela do mês já guardada (+ Aportar extra)'
+                    ) : (
+                      `👉 Guardar parcela do mês (+ ${formatCurrency(box.monthlyTarget)})`
+                    )}
+                  </button>
+                </div>
               </div>
             );
           })}
@@ -122,3 +179,4 @@ export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes }) => {
 });
 
 BoxesSection.displayName = 'BoxesSection';
+
