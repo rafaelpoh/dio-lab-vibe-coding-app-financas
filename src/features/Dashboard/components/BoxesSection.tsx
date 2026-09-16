@@ -12,6 +12,7 @@ export interface BoxesSectionProps {
 
 export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes, onDepositMonthlyTarget }) => {
   const [loadingBoxId, setLoadingBoxId] = useState<string | null>(null);
+  const [errorMessageMap, setErrorMessageMap] = useState<Record<string, string>>({});
 
   const handleDeposit = useCallback(
     async (box: FinancialBox) => {
@@ -19,9 +20,11 @@ export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes, onDeposi
 
       try {
         setLoadingBoxId(box.id);
+        setErrorMessageMap((prev) => ({ ...prev, [box.id]: '' }));
         await onDepositMonthlyTarget(box.id, box.monthlyTarget);
       } catch (err) {
-        console.error('Falha ao guardar parcela da caixinha:', err);
+        const msg = err instanceof Error ? err.message : 'Falha ao guardar parcela.';
+        setErrorMessageMap((prev) => ({ ...prev, [box.id]: msg }));
       } finally {
         setLoadingBoxId(null);
       }
@@ -169,6 +172,12 @@ export const BoxesSection: React.FC<BoxesSectionProps> = memo(({ boxes, onDeposi
                     )}
                   </button>
                 </div>
+
+                {errorMessageMap[box.id] && (
+                  <div className={styles.boxWarningBanner} role="alert">
+                    ⚠️ {errorMessageMap[box.id]}
+                  </div>
+                )}
               </div>
             );
           })}

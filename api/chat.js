@@ -1,6 +1,6 @@
-// api/chat.js - Processamento de IA e persistência no Cloud Firestore
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { getFirestoreDb, FieldValue } = require('./lib/firebaseAdmin');
+const { getUserAvailableBalance, getUserBoxes } = require('./lib/balanceUtils');
 
 module.exports = async (req, res) => {
     // CORS Handling
@@ -17,12 +17,25 @@ module.exports = async (req, res) => {
     if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: 'GEMINI_API_KEY não configurada' });
 
     try {
+        const db = getFirestoreDb();
+        const { availableBalance } = await getUserAvailableBalance(db, userId);
+        const userBoxes = await getUserBoxes(db, userId);
+
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+        const boxesContextText = userBoxes.length === 0
+            ? "Nenhuma caixinha criada até o momento."
+            : userBoxes.map(b => `- "${b.name}": Meta R$ ${b.targetAmount.toFixed(2)}, Guardado R$ ${b.currentAmount.toFixed(2)}, Meta mensal R$ ${b.monthlyTarget.toFixed(2)}, Guardado este mês R$ ${b.savedThisMonth.toFixed(2)}, Falta para a meta final R$ ${b.remainingTotal.toFixed(2)}.`).join('\n');
 
         const prompt = `
         Você é o Educador Financeiro Inteligente, um assistente virtual voltado para orientar usuários com vida financeira ativa a organizarem suas finanças pessoais.
         Seu objetivo principal é ajudar o usuário a superar o hábito de gastar mais do que ganha no início do mês, fornecendo métodos simples de controle de gastos, metas de economia realistas e noções básicas de investimentos para o dinheiro poupado.
+
+        DADOS FINANCEIROS REAIS DO USUÁRIO NO MOMENTO:
+        - Saldo Livre Disponível em Conta: R$ ${availableBalance.toFixed(2)}
+        - Caixinhas / Metas Ativas do Usuário:
+        ${boxesContextText}
 
         DIRETRIZES DE TOM DE VOZ E COMUNICAÇÃO:
         - Amigável, acolhedor e encorajador, sem julgamentos sobre os erros financeiros do usuário.
@@ -50,24 +63,32 @@ module.exports = async (req, res) => {
         - Adaptabilidade: Caso o usuário não tenha informado renda, idade ou objetivo, peça esses dados de forma breve antes de sugerir planos complexos.
         - Reset: Se o usuário pedir para zerar, resetar, limpar ou apagar a carteira/saldo/gastos/dados, classifique type como "reset" e amount como 0.
 
-        CAIXINHAS / METAS DE PROJETOS:
-        O usuário pode criar caixinhas para guardar dinheiro para projetos futuros (ex: viagem, intercâmbio, reserva, reforma, carro, etc.):
-        1. Criação de Caixinha:
+        CAIXINHAS / METAS DE PROJETOS E VERIFICAÇÃO DE SALDO:
+        1. Verificação de Saldo Livre:
+           - O usuário só pode guardar na caixinha até o limite do seu "Saldo Livre Disponível em Conta" (R$ ${availableBalance.toFixed(2)}).
+           - Se o usuário tentar guardar um valor superior ao saldo livre disponível, ACOLHA o usuário, informe que o saldo atual de R$ ${availableBalance.toFixed(2)} é insuficiente para esse montante, NÃO processe o débito ("box": null), e oriente-o a guardar uma quantia menor compatível com o saldo ou registrar novas receitas.
+        2. Criação de Caixinha:
            - Se o usuário manifestar intenção de criar caixinha ou juntar dinheiro para uma meta (ex: "quero criar uma caixinha para uma viagem daqui a 12 meses e preciso guardar 10 mil no total"):
            - Preencha o objeto "box" com action="create", o nome do projeto (ex: "Viagem"), o valor total (targetAmount), o prazo em meses (deadlineMonths) e o valor mensal calculado (monthlyTarget = targetAmount / deadlineMonths).
-           - No botMessage, calcule e informe expressamente quanto o usuário precisará guardar por mês (ex: "R$ 833,33 por mês"), parabenize pelo objetivo e aplique a estrutura padrão (Diagnóstico, Plano de Ação, Simulação e Destino de Investimento para a caixinha render).
-        2. Depósito em Caixinha:
-           - Se o usuário disser que guardou ou quer depositar dinheiro na caixinha (ex: "guardei 500 na caixinha da viagem", "depositei 850 para a viagem"):
-           - Preencha "box" com action="deposit", name="Viagem", depositAmount=500.
-           - Defina type="investment", category="Investimento", amount=500.
-           - No botMessage, comemore o aporte e mostre encorajamento.
-        3. Se a mensagem não envolver criação ou aporte de caixinha, defina "box": null.
+           - No botMessage, calcule e informe expressamente quanto o usuário precisará guardar por mês (ex: "R$ 833,33 por mês"), parabenize pelo objetivo e aplique a estrutura padrão.
+        3. Depósito em Caixinha (Parcela Cheia ou Quantia Menor):
+           - O usuário pode pedir para guardar a parcela inteira ou uma QUANTIA MENOR caso não consiga guardar a parcela cheia no mês (ex: "este mês só consigo guardar 200 na caixinha da viagem", "guardei 300 para a viagem", "guarda 400 na caixinha"):
+           - Se o valor estiver dentro do saldo disponível:
+             - Preencha "box" com action="deposit", name="<nome>", depositAmount=<valor menor ou informado>.
+             - Defina type="investment", category="Investimento", amount=<valor informado>.
+             - No botMessage:
+               a) Celebre e encoraje o esforço de poupar, mesmo que seja uma quantia menor!
+               b) RECALCULE e mostre exatamente:
+                  - Quanto já foi guardado no total com esse aporte.
+                  - Quanto ainda falta para atingir a meta total.
+                  - Como fica o valor das próximas parcelas ou quanto falta para atingir a meta deste mês.
+        4. Se a mensagem não envolver criação ou aporte de caixinha, defina "box": null.
 
         ESTRUTURA PADRÃO DAS RESPOSTAS (botMessage):
         Sempre estruture o texto do botMessage seguindo estas 4 partes (utilizando quebras de linha e tópicos para ótima legibilidade):
-        1. Diagnóstico e Acolhimento: Breve comentário empático sobre a situação apresentada ou registro feito.
+        1. Diagnóstico e Acolhimento: Breve comentário empático sobre a situação apresentada, registro feito ou acolhimento da quantia menor poupada.
         2. Plano de Ação Imediato: Lista de 2 a 4 passos práticos para organizar o dinheiro da semana/mês ou atingir a meta.
-        3. Simulação ou Meta: Um exemplo numérico simples de economia ou progresso.
+        3. Simulação ou Meta: Um exemplo numérico simples de economia ou progresso (incluindo o recálculo do que falta quando aplicável).
         4. Sugestão de Destino/Investimento: Onde guardar a economia/caixinha gerada (ex.: Reserva de Emergência em Tesouro Selic ou CDB de liquidez diária), acompanhada obrigatoriamente do aviso de risco.
         (Exceção: em caso de reset, responda com acolhimento e confirme claramente a reinicialização da carteira).
 
@@ -98,7 +119,6 @@ module.exports = async (req, res) => {
         const cleanJsonText = responseText.replace(/```json/gi, '').replace(/```/gi, '').trim();
         const extractedData = JSON.parse(cleanJsonText);
 
-        const db = getFirestoreDb();
         const transactionsRef = db.collection('transactions');
         const boxesRef = db.collection('boxes');
         
@@ -169,6 +189,20 @@ module.exports = async (req, res) => {
             if (boxAction === 'deposit') {
                 const depositAmount = Number(extractedData.box.depositAmount || extractedData.amount) || 0;
                 const targetName = (extractedData.box.name || '').trim().toLowerCase();
+
+                // Validação de saldo disponível
+                if (depositAmount > availableBalance) {
+                    return res.status(200).json({
+                        text: extractedData.botMessage || `Você não possui saldo livre suficiente em conta (R$ ${availableBalance.toFixed(2)}) para guardar R$ ${depositAmount.toFixed(2)}. Que tal guardar um valor menor compatível com seu saldo atual?`,
+                        transaction: {
+                            amount: 0,
+                            category: 'Investimento',
+                            description: 'Tentativa de aporte sem saldo',
+                            type: 'other',
+                            botMessage: extractedData.botMessage
+                        }
+                    });
+                }
 
                 if (depositAmount > 0) {
                     const boxesSnapshot = await boxesRef.where('userId', '==', userId).get();

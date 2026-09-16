@@ -1,5 +1,6 @@
 // api/box-deposit.js - Processamento de aporte direto em Caixinha pelo Dashboard
 const { getFirestoreDb, FieldValue } = require('./lib/firebaseAdmin');
+const { getUserAvailableBalance } = require('./lib/balanceUtils');
 
 module.exports = async (req, res) => {
     // CORS Handling
@@ -37,6 +38,14 @@ module.exports = async (req, res) => {
 
         if (depositAmount <= 0) {
             return res.status(400).json({ error: 'Valor de aporte inválido' });
+        }
+
+        // Validação obrigatória de saldo livre em conta
+        const { availableBalance } = await getUserAvailableBalance(db, userId);
+        if (depositAmount > availableBalance) {
+            return res.status(400).json({
+                error: `Saldo insuficiente em conta (R$ ${availableBalance.toFixed(2)}) para guardar R$ ${depositAmount.toFixed(2)}. Você pode conversar com o Educador Financeiro no Chat para guardar uma quantia menor!`
+            });
         }
 
         const updatedCurrent = Number(boxData.currentAmount || 0) + depositAmount;
