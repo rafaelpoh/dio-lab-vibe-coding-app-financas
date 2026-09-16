@@ -7,7 +7,7 @@ import type { ChatMessage } from '../types';
 const INITIAL_BOT_MESSAGE: ChatMessage = {
   id: 'initial-welcome-message',
   sender: 'bot',
-  text: 'Olá! Sou seu Agente Financeiro. Me conte o que você gastou hoje ou se recebeu algum dinheiro. Ex: "Gastei R$ 30 com almoço".',
+  text: 'Olá! Sou o seu Educador Financeiro Inteligente. Estou aqui para ajudar você a organizar suas finanças, evitar apertos no fim do mês e começar a investir com segurança. Me conte: o que você gostaria de registrar ou planejar hoje?',
   timestamp: Date.now(),
 };
 

@@ -6,6 +6,38 @@ const fs = require('fs');
 
 let cachedDb = null;
 
+function parseServiceAccount(raw) {
+  if (!raw) return null;
+  let text = String(raw).trim();
+
+  // Remove aspas simples ou duplas externas que possam ter sido adicionadas na UI da Vercel
+  if ((text.startsWith("'") && text.endsWith("'")) || (text.startsWith('"') && text.endsWith('"'))) {
+    text = text.slice(1, -1).trim();
+  }
+
+  // Se não começa com '{', tenta decodificar de Base64
+  if (!text.startsWith('{')) {
+    try {
+      const decoded = Buffer.from(text, 'base64').toString('utf8');
+      if (decoded.trim().startsWith('{')) {
+        text = decoded.trim();
+      }
+    } catch (_) {}
+  }
+
+  try {
+    const parsed = JSON.parse(text);
+    if (parsed.private_key) {
+      // Garante que sequências literais '\n' virem quebras de linha reais
+      parsed.private_key = parsed.private_key.replace(/\\n/g, '\n');
+    }
+    return parsed;
+  } catch (err) {
+    console.error('Falha ao processar credencial FIREBASE_SERVICE_ACCOUNT:', err.message);
+    return null;
+  }
+}
+
 function getFirebaseAdminApp() {
   const apps = getApps();
   if (apps.length > 0) {
@@ -14,21 +46,24 @@ function getFirebaseAdminApp() {
 
   let credential = null;
 
-  // 1. Variável de ambiente contendo o JSON completo (Vercel)
+  // 1. Variável de ambiente contendo o JSON completo (em texto plano, minificado ou Base64)
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    try {
-      const parsed = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-      if (parsed.private_key) {
-        // Corrige quebra de linha caso venha escapada como literal '\n'
-        parsed.private_key = parsed.private_key.replace(/\\n/g, '\n');
-      }
+    const parsed = parseServiceAccount(process.env.FIREBASE_SERVICE_ACCOUNT);
+    if (parsed) {
       credential = cert(parsed);
-    } catch (err) {
-      console.error('Falha ao processar FIREBASE_SERVICE_ACCOUNT:', err);
     }
   }
 
-  // 2. Arquivo local serviceAccountKey.json (desenvolvimento local)
+  // 2. Variáveis de ambiente individuais (alternativa limpa sem multilinhas)
+  if (!credential && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+    credential = cert({
+      projectId: process.env.FIREBASE_PROJECT_ID || 'agente-financas-2026',
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+    });
+  }
+
+  // 3. Arquivo local serviceAccountKey.json (desenvolvimento local)
   if (!credential) {
     const keyPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
       ? path.resolve(process.cwd(), process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
@@ -37,24 +72,30 @@ function getFirebaseAdminApp() {
     if (fs.existsSync(keyPath)) {
       try {
         const fileContent = fs.readFileSync(keyPath, 'utf8');
-        const serviceAccount = JSON.parse(fileContent);
-        if (serviceAccount.private_key) {
-          serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+        const parsed = parseServiceAccount(fileContent);
+        if (parsed) {
+          credential = cert(parsed);
         }
-        credential = cert(serviceAccount);
       } catch (err) {
-        console.error('Falha ao ler serviceAccountKey.json:', err);
+        console.error('Falha ao ler serviceAccountKey.json local:', err.message);
       }
     }
   }
 
-  // 3. Fallback para Application Default Credentials
-  if (!credential) {
+  // 4. Se GOOGLE_APPLICATION_CREDENTIALS estiver configurado explicitamente
+  if (!credential && process.env.GOOGLE_APPLICATION_CREDENTIALS) {
     try {
       credential = applicationDefault();
     } catch (err) {
-      console.error('Falha ao carregar credenciais padrão:', err);
+      console.error('Falha ao carregar credenciais padrão do Google Cloud:', err.message);
     }
+  }
+
+  // Se mesmo assim não obteve credenciais, lança erro explicativo
+  if (!credential) {
+    throw new Error(
+      'Credenciais do Firebase Admin não encontradas no ambiente. Configure a variável FIREBASE_SERVICE_ACCOUNT (JSON ou Base64) no painel da Vercel e realize um novo Deploy.'
+    );
   }
 
   return initializeApp({
