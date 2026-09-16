@@ -2,6 +2,30 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { getFirestoreDb, FieldValue } = require('./lib/firebaseAdmin');
 const { getUserAvailableBalance, getUserBoxes } = require('./lib/balanceUtils');
 
+const CANDIDATE_MODELS = [
+    'gemini-3.5-flash',
+    'gemini-flash-latest',
+    'gemini-3.5-flash-lite',
+    'gemini-flash-lite-latest',
+    'gemini-2.5-flash',
+    'gemini-2.5-flash-lite'
+];
+
+async function generateContentWithFallback(genAI, prompt) {
+    let lastError = null;
+    for (const modelName of CANDIDATE_MODELS) {
+        try {
+            const model = genAI.getGenerativeModel({ model: modelName });
+            const result = await model.generateContent(prompt);
+            return { result, modelName };
+        } catch (err) {
+            console.warn(`[Gemini Fallback] Modelo ${modelName} falhou: ${err.message}. Tentando próximo modelo...`);
+            lastError = err;
+        }
+    }
+    throw lastError || new Error('Todos os modelos de IA disponíveis falharam.');
+}
+
 module.exports = async (req, res) => {
     // CORS Handling
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -22,7 +46,6 @@ module.exports = async (req, res) => {
         const userBoxes = await getUserBoxes(db, userId);
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const boxesContextText = userBoxes.length === 0
             ? "Nenhuma caixinha criada até o momento."
@@ -55,6 +78,15 @@ module.exports = async (req, res) => {
         3. Dicas Personalizadas e Orientação de Investimentos:
            - Adequar as sugestões à renda mensal, faixa etária e objetivos informados pelo usuário.
            - Apresentar opções básicas para iniciantes (ex.: Reserva de Emergência em Tesouro Selic ou CDBs com liquidez diária).
+
+        ENTRADAS DE RENDA / ADIÇÃO DE SALDO:
+        - Sempre que o usuário informar que recebeu dinheiro, salário, renda, pagamento, freela, ou informar saldo atual/inicial, ou pedir para "adicionar saldo", "colocar saldo", "adicionar dinheiro", "depósito em conta", "tenho X de saldo" (ex: "adicionei 500 de saldo", "recebi 3000 de salário", "adicionar saldo de 1000", "adicionar 500", "coloquei 200 de saldo", "meu saldo é 1500"):
+          - Defina "type": "income"
+          - Defina "category": "Renda"
+          - Defina "amount": <valor numérico positivo informado>
+          - Defina "description": "Adição de Saldo" ou a descrição informada (ex: "Salário", "Rendimento", "Saldo Adicionado")
+          - Defina "box": null (a menos que ele especifique guardar expressamente em uma caixinha)
+          - No botMessage: celebre calorosamente a entrada financeira, oriente como planejar o uso desse novo saldo (método de divisão 50-30-20 ou similar) e apresente as 4 partes padrão.
 
         GUARDRAILS E REGRAS OBRIGATÓRIAS:
         - Risco de Investimentos: Sempre informe expressamente que qualquer investimento envolve riscos e que rendimentos passados não garantem rentabilidade futura.
@@ -112,12 +144,31 @@ module.exports = async (req, res) => {
         }
         `;
 
-        const result = await model.generateContent(prompt);
+        const { result } = await generateContentWithFallback(genAI, prompt);
         const responseText = result.response.text();
         
         // Limpar possíveis formatações markdown do Gemini antes de fazer o parse
         const cleanJsonText = responseText.replace(/```json/gi, '').replace(/```/gi, '').trim();
-        const extractedData = JSON.parse(cleanJsonText);
+        let jsonPayload = cleanJsonText;
+        const jsonMatch = cleanJsonText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            jsonPayload = jsonMatch[0];
+        }
+
+        let extractedData;
+        try {
+            extractedData = JSON.parse(jsonPayload);
+        } catch (parseErr) {
+            console.error('Falha no parse do JSON gerado pela IA:', responseText);
+            extractedData = {
+                amount: 0,
+                category: 'Outros',
+                description: 'Conversa',
+                type: 'other',
+                botMessage: responseText,
+                box: null
+            };
+        }
 
         const transactionsRef = db.collection('transactions');
         const boxesRef = db.collection('boxes');
