@@ -1,6 +1,6 @@
 // api/chat.js - Processamento de IA e persistência no Cloud Firestore
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const { getFirestoreDb, getFirebaseAdmin } = require('./lib/firebaseAdmin');
+const { getFirestoreDb, FieldValue } = require('./lib/firebaseAdmin');
 
 module.exports = async (req, res) => {
     // CORS Handling
@@ -51,7 +51,6 @@ module.exports = async (req, res) => {
         const extractedData = JSON.parse(cleanJsonText);
 
         const db = getFirestoreDb();
-        const admin = getFirebaseAdmin();
         const transactionsRef = db.collection('transactions');
         
         // Se a IA identificou que o usuário quer resetar a conta
@@ -77,7 +76,7 @@ module.exports = async (req, res) => {
             description: extractedData.description,
             type: extractedData.type,
             date: new Date(),
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
+            createdAt: FieldValue.serverTimestamp()
         });
 
         return res.status(200).json({
