@@ -1,65 +1,231 @@
 # 💸 Agente Financeiro Inteligente
 
-Um aplicativo de controle financeiro moderno e inteligente, construído com foco em **Performance** (Vanilla JS/CSS) e **Arquitetura Serverless**. A principal proposta é eliminar a necessidade de planilhas complexas ou formulários longos: você simplesmente *conversa* com uma Inteligência Artificial, e ela organiza todo o seu dinheiro.
+> Aplicativo moderno de gestão financeira pessoal assistido por Inteligência Artificial (Google Gemini), combinando uma experiência conversacional intuitiva, metas financeiras em caixinhas, dashboard em tempo real e gráficos em CSS puro com arquitetura Serverless.
 
-## 🚀 Como Funciona
+---
 
-Em vez de preencher formulários com valores, categorias e datas, você interage com o **Agente Financeiro (Google Gemini)** via Chat. O agente interpreta a linguagem natural, extrai os dados estruturados e os salva e categoriza automaticamente no seu Dashboard.
+## 🌟 Visão Geral
 
-**Exemplos de Interação:**
-- *"Gastei R$ 45 com pizza ontem"* -> O Agente registra uma **Despesa** na categoria **Alimentação**.
-- *"Recebi 2000 reais de salário"* -> O Agente registra uma **Receita**.
-- *"Tenho 1000 reais, onde devo investir?"* -> O Agente atua como consultor, fornecendo dicas com **alertas de risco de mercado** e já salva o valor na nova aba de Investimentos.
-- *"Zere a minha carteira"* -> O Agente atende seu comando e reinicia sua conta, apagando os registros de teste.
+O **Agente Financeiro Inteligente** elimina a complexidade, a frieza e o atrito cognitivo de planilhas manuais ou formulários extensos. Em vez de preencher cadastros repetitivos de valores, categorias e datas, você simplesmente **conversa com o Agente em linguagem natural**.
 
-## ✨ Principais Recursos
+A Inteligência Artificial interpreta a intenção do usuário, extrai dados estruturados, valida saldos disponíveis, categoriza despesas e receitas, gerencia aportes em caixinhas de objetivos e atualiza o painel analítico instantaneamente.
 
-- **🤖 Inteligência Artificial Integrada:** Processamento de linguagem natural focado e rápido usando o modelo mais avançado `gemini-2.5-flash` via API do Google.
-- **📊 Dashboard Dinâmico:** Um painel visual, sem a necessidade de refresh na página, que exibe Receitas, Despesas e Investimentos.
-- **🎨 Gráfico Vanilla CSS:** Um belíssimo gráfico de distribuição da carteira construído 100% com matemática JavaScript nativa e a propriedade `conic-gradient` do CSS3 (zero bibliotecas externas pesadas).
-- **☁️ Arquitetura Serverless:** Rotas de backend (`/api`) seguras, escaláveis e prontas para rodar no ambiente Vercel com Firebase Admin SDK.
-- **🔥 Firebase Authentication & Cloud Firestore:** Autenticação gerenciada e banco de dados NoSQL em nuvem em tempo real.
-- **🌗 Dark Mode e Temas:** Alternância de tema fluida utilizando variáveis de CSS nativo.
-- **💡 Hover Cards (CSS Tooltips):** Instruções elegantes e velozes espalhadas pela interface, feitas inteiramente em CSS (Hover e z-index), sem depender de renderização JS.
+```
+                  ┌───────────────────────────────┐
+                  │    Usuário (Linguagem Natural)│
+                  └───────────────┬───────────────┘
+                                  │
+                                  ▼
+    ┌───────────────────────────────────────────────────────────┐
+    │  💬 Chat Assistido com Google Gemini (Fallback Resiliente) │
+    └──────┬──────────────────────┬──────────────────────┬──────┘
+           │                      │                      │
+           ▼                      ▼                      ▼
+  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+  │ 📊 Dashboard     │  │ 🎯 Caixinhas     │  │ 🔐 Firebase      │
+  │ Saldo & Gráfico  │  │ Metas & Aportes  │  │ Auth & Firestore │
+  │ em CSS Puro      │  │ com Saldo Livre  │  │ em Tempo Real    │
+  └──────────────────┘  └──────────────────┘  └──────────────────┘
+```
+
+---
+
+## 🚀 Exemplos de Interação Conversacional
+
+- **Registrar Despesas:**  
+  > *"Gastei R$ 65,00 no almoço com amigos"*  
+  > ➜ O Agente classifica como **Despesa**, categoria **Alimentação** e debita do seu saldo.
+
+- **Adicionar Renda / Saldo:**  
+  > *"Recebi meu salário de 3500 reais"* ou *"Adicionar saldo de 500"*  
+  > ➜ O Agente registra uma **Receita**, eleva seu **Saldo Disponível** e orienta sobre a regra de divisão de orçamento (ex.: 50-30-20).
+
+- **Criar e Alimentar Caixinhas de Metas:**  
+  > *"Quero criar uma caixinha de Reserva de Emergência com meta de 6000 e guardar 300 agora"*  
+  > ➜ O Agente cria a meta, valida se você tem saldo em conta e direciona o aporte para a caixinha.
+
+- **Consultoria e Educação Financeira:**  
+  > *"Sobrou R$ 400 este mês, onde posso investir?"*  
+  > ➜ O Agente fornece orientações educativas sobre renda fixa com liquidez diária (Tesouro Selic/CDBs), sempre acompanhadas de alertas claros sobre risco de mercado.
+
+- **Zerar Carteira (Reset):**  
+  > *"Zere minha carteira"*  
+  > ➜ O Agente atende o comando com confirmação e limpa os dados de teste da conta.
+
+---
+
+## ✨ Principais Funcionalidades
+
+### 🤖 1. IA Conversacional Resiliente (Google Gemini)
+- Processamento semântico nativo via SDK oficial `@google/generative-ai`.
+- **Estratégia de Fallback em Cascata:** Se um modelo específico estiver temporariamente indisponível ou rate-limited, o sistema alterna automaticamente entre modelos homologados (`gemini-3.5-flash`, `gemini-flash-latest`, `gemini-3.5-flash-lite`, `gemini-2.5-flash`).
+- **Guardrails Educativos:** Respostas estruturadas em passos práticos, sem promessas irrealistas de ganhos e com avisos éticos de risco.
+
+### 🎯 2. Caixinhas de Metas & Sonhos
+- Mapeamento de objetivos financeiros (ex.: Reserva de Emergência, Carro Novo, Viagem de Férias).
+- Acompanhamento de **Meta Total**, **Meta Mensal Sugerida**, **Valor Acumulado** e barra de progresso percentual.
+- **Validação de Saldo Livre:** O sistema impede aportes que excedam o saldo disponível em conta.
+- Botão de **Aporte Mensal Rápido** diretamente no card da caixinha com feedback de sucesso/erro.
+
+### 📊 3. Dashboard Analítico em Tempo Real
+- Cards de resumo: **Saldo Disponível**, **Receitas**, **Despesas** e **Investimentos**.
+- **Gráfico de Pizza em CSS Puro:** Desenvolvido 100% com matemática JavaScript nativa e a propriedade `conic-gradient` do CSS3, eliminando o peso de bibliotecas gráficas pesadas (zero Chart.js ou D3).
+- Detalhamento de gastos categorizados com cálculo de participação percentual.
+
+### 🔐 4. Autenticação & Persistência Segura
+- Autenticação gerenciada via **Firebase Authentication** (email/senha) com persistência de sessão.
+- Banco de dados em nuvem em tempo real com **Cloud Firestore** e isolamento completo por usuário (`userId`).
+- Validação estrita de contratos de dados na fronteira com **Zod** (filosofia Zero Trust).
+
+### 🎨 5. Design System, Dark Mode & Acessibilidade
+- Alternância fluida entre tema **Escuro** e **Claro** baseada em variáveis CSS nativas (`tokens.css`).
+- Componentes acessíveis com navegação por teclado, atributos ARIA e avisos de tela.
+- **Tooltips em CSS Puro:** Dicas de contexto nos cards e cabeçalhos sem custos de re-renderização JavaScript.
+
+---
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Frontend:** React 18+, TypeScript (ES2022+ com `strict: true`), Vite, Zod (Validação de Fronteira e Zero Trust), Firebase Client SDK, CSS Modules e Design Tokens em CSS nativo.
-- **Backend:** Node.js (Vercel Serverless Functions) com Firebase Admin SDK.
-- **Banco de Dados & Auth:** Google Cloud Firestore e Firebase Authentication.
-- **IA:** SDK Oficial do Google Gemini (`@google/generative-ai`).
+| Camada | Tecnologia | Finalidade |
+| :--- | :--- | :--- |
+| **Frontend** | [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) | Interface reativa, modular e fortemente tipada (`strict: true`) |
+| **Build Tool** | [Vite 5](https://vitejs.dev/) | Empacotamento ultraveloz e Hot Module Replacement (HMR) |
+| **Estilização** | CSS Modules + Vanilla CSS Tokens | Design system modular, temas claro/escuro e zero runtime de CSS |
+| **Validação** | [Zod](https://zod.dev/) | Validação de esquemas e contratos de dados na borda |
+| **Backend** | Node.js Serverless Functions | Endpoints desacoplados e escaláveis na pasta `/api` |
+| **Plataforma Nuvem** | [Vercel](https://vercel.com/) | Hospedagem de frontend e execução de Serverless Functions |
+| **Banco & Auth** | [Firebase](https://firebase.google.com/) (Auth, Firestore, Admin SDK) | Autenticação de usuários e persistência NoSQL |
+| **Inteligência Artificial** | [Google Gemini API](https://ai.google.dev/) | Processamento de linguagem natural e categorização financeira |
 
-## ⚙️ Como Rodar Localmente (Desenvolvimento)
+---
 
-Para rodar este projeto em sua máquina local simulando a exata arquitetura Serverless:
+## 📂 Estrutura do Projeto
 
-1. **Instale as dependências e o Vercel CLI:**
-   ```bash
-   npm install
-   npm install -g vercel
-   ```
+```plaintext
+dio-lab-vibe-coding-app-financas/
+├── api/                         # Backend Serverless Functions (Vercel)
+│   ├── lib/
+│   │   ├── balanceUtils.js      # Utilitários de cálculo de saldo livre e caixinhas
+│   │   └── firebaseAdmin.js     # Inicialização resiliente do Firebase Admin SDK
+│   ├── box-deposit.js           # Rota para aporte rápido em caixinha
+│   ├── chat.js                  # Orquestração do chat com Gemini e persistência
+│   ├── dashboard.js             # Agregação analítica de métricas financeiras
+│   └── login.js                 # Verificação/utilitário de sessão
+├── public/                      # Ativos estáticos públicos
+│   └── favicon.svg              # Favicon oficial do aplicativo
+├── src/                         # Código-fonte do Frontend (React + TypeScript)
+│   ├── components/              # Componentes de UI genéricos (Button, Sidebar, Tooltip)
+│   ├── features/                # Módulos funcionais isolados
+│   │   ├── Auth/                # Login, cadastro e estado de sessão
+│   │   ├── Chat/                # Interface do chat, input, histórico e badge de saldo
+│   │   └── Dashboard/           # Cards, gráfico em CSS, caixinhas e categorias
+│   ├── hooks/                   # Hooks customizados globais (ex.: useTheme)
+│   ├── lib/                     # Inicialização do Firebase Client SDK
+│   ├── styles/                  # Design tokens, variáveis CSS e reset global
+│   ├── types/                   # Tipagens TypeScript compartilhadas
+│   ├── utils/                   # Utilitários de formatação e chamadas de API
+│   ├── App.tsx                  # Componente principal e orquestrador de estado
+│   └── main.tsx                 # Ponto de entrada da aplicação React
+├── .env.example                 # Modelo documentado de variáveis de ambiente
+├── index.html                   # HTML base com fontes tipográficas e meta tags
+├── package.json                 # Dependências e scripts de automação
+├── tsconfig.json                # Configurações do compilador TypeScript
+├── vercel.json                  # Roteamento e configurações da Vercel
+└── vite.config.ts               # Configuração do Vite e plugins
+```
 
-2. **Configure as Variáveis de Ambiente:**
-   Crie um arquivo chamado `.env` na pasta principal do projeto (ele não subirá para o github) contendo as seguintes chaves:
-   ```env
-   VITE_FIREBASE_API_KEY="sua_api_key_do_firebase"
-   VITE_FIREBASE_AUTH_DOMAIN="seu_projeto.firebaseapp.com"
-   VITE_FIREBASE_PROJECT_ID="seu_projeto_id"
-   VITE_FIREBASE_STORAGE_BUCKET="seu_projeto.firebasestorage.app"
-   VITE_FIREBASE_MESSAGING_SENDER_ID="seu_sender_id"
-   VITE_FIREBASE_APP_ID="seu_app_id"
-   FIREBASE_SERVICE_ACCOUNT_PATH="./serviceAccountKey.json"
-   GEMINI_API_KEY="sua_chave_do_google_ai_studio"
-   ```
+---
 
-3. **Inicie o Servidor:**
-   ```bash
-   vercel dev
-   ```
-   Acesse no navegador: `http://localhost:3000`.
+## ⚙️ Como Executar Localmente
 
-## 📦 Deploy na Vercel
+### 1. Pré-requisitos
+- [Node.js](https://nodejs.org/) versão 18 ou superior instalada.
+- Uma conta no [Firebase Console](https://console.firebase.google.com/) com um projeto configurado (Authentication e Cloud Firestore ativados).
+- Uma chave de API gratuita do [Google AI Studio](https://aistudio.google.com/).
 
-A infraestrutura está otimizada para CI/CD via **Vercel**. 
-Basta fazer o push (envio) deste código para o seu repositório do GitHub e vincular na Vercel. A plataforma vai detectar a pasta `api/` automaticamente e gerar os endpoints serverless.
-Lembre-se de configurar as variáveis de ambiente do Firebase e do Gemini nas configurações do projeto no painel da Vercel (incluindo `FIREBASE_SERVICE_ACCOUNT` com o conteúdo JSON da chave privada para produção).
+### 2. Clonar o Repositório e Instalar Dependências
+```bash
+git clone https://github.com/rafaelpoh/dio-lab-vibe-coding-app-financas.git
+cd dio-lab-vibe-coding-app-financas
+npm install
+```
+
+### 3. Configurar Variáveis de Ambiente
+Crie um arquivo `.env` na raiz do projeto copiando como referência o arquivo `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+Preencha as chaves no arquivo `.env`:
+```env
+# Firebase Client (Frontend)
+VITE_FIREBASE_API_KEY="sua_firebase_api_key"
+VITE_FIREBASE_AUTH_DOMAIN="seu-projeto.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID="seu-projeto-id"
+VITE_FIREBASE_STORAGE_BUCKET="seu-projeto.firebasestorage.app"
+VITE_FIREBASE_MESSAGING_SENDER_ID="seu_messaging_sender_id"
+VITE_FIREBASE_APP_ID="seu_firebase_app_id"
+
+# Firebase Admin (Backend local)
+# Baixe a chave privada JSON no Firebase Console (Configurações do Projeto > Contas de Serviço)
+FIREBASE_SERVICE_ACCOUNT_PATH="./serviceAccountKey.json"
+
+# Google Gemini API
+GEMINI_API_KEY="sua_gemini_api_key"
+```
+
+> ⚠️ **Atenção:** Os arquivos `.env` e `serviceAccountKey.json` estão protegidos no `.gitignore` e nunca devem ser enviados ao repositório público.
+
+### 4. Executar em Desenvolvimento
+
+#### Opção A: Ambiente Completo com Vercel CLI (Recomendado)
+Para simular localmente tanto o frontend React quanto as Serverless Functions da pasta `/api`:
+```bash
+npm install -g vercel
+vercel dev
+```
+O aplicativo estará acessível em: `http://localhost:3000`.
+
+#### Opção B: Apenas o Frontend Vite
+```bash
+npm run dev
+```
+O aplicativo estará acessível em: `http://localhost:5173`.
+
+---
+
+## 📜 Scripts Disponíveis
+
+- `npm run dev`: Inicia o servidor de desenvolvimento rápido do Vite.
+- `npm run build`: Executa a verificação estrita de tipagem com TypeScript (`tsc`) e compila o bundle de produção otimizado em `dist/`.
+- `npm run preview`: Inicia um servidor local para inspecionar o bundle de produção gerado.
+
+---
+
+## ☁️ Deploy na Vercel
+
+O projeto está 100% configurado para CI/CD automático na **Vercel**:
+
+1. Crie um novo projeto na Vercel importando este repositório do GitHub.
+2. A plataforma detectará automaticamente o Vite no frontend e os endpoints na pasta `api/`.
+3. No painel da Vercel (**Settings > Environment Variables**), adicione as variáveis:
+   - Todas as variáveis que iniciam com `VITE_FIREBASE_*`.
+   - `GEMINI_API_KEY`.
+   - `FIREBASE_SERVICE_ACCOUNT`: Cole o conteúdo de texto JSON completo da sua chave privada de conta de serviço (o backend em `api/lib/firebaseAdmin.js` faz o parse automático dessa variável na nuvem).
+4. Clique em **Deploy**.
+
+---
+
+## 🛡️ Segurança e Boas Práticas
+
+- **Prevenção Total contra XSS:** Não há utilização de `innerHTML`, `outerHTML` ou métodos inseguros de injeção de HTML dinâmico. Toda manipulação textual utiliza bindings seguros e `textContent`.
+- **Zero Trust & Validação de Fronteiras:** Requisições de formulários e contratos de API são validados rigorosamente em tempo de execução através do Zod.
+- **Isolamento de Estilos:** Zero poluição global de CSS graças ao uso de CSS Modules escopados e tokens centralizados em `src/styles/tokens.css`.
+- **Proteção de Segredos:** Nenhuma chave privada ou segredo sensível trafega no bundle do cliente; o contato com o Google Gemini e Firestore Admin é restrito ao ambiente isolado do backend.
+
+---
+
+## 📄 Licença
+
+Este projeto é desenvolvido para fins de estudo e portfólio sob a licença **ISC**. Sinta-se livre para explorar, clonar e aprimorar!
